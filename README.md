@@ -26,22 +26,25 @@ Usage
 ```
 -w | --weight WEIGHT   Weight specified as noted bellow
 -v | --velocity SPEED  Speed specified as noted bellow
+-r | --radius RADIUS   The radius of the target to calculate MPBR
 
 
 
 The weight value can be an integer or floating point value with an optional suffix from the following list. If no suffix is provided then the value is expected to be in grains.
 
-gr = grains
-g  = grams
-#  = pounds
-st = short tons (2000 pounds)
-lt = long ton (2,240 pounds)
-mt = metric tonne (1,000 kg)
+gr     = grains
+g      = grams
+# | lb = pounds
+st     = stone (14 pounds)
+ton    = short tons (2000 pounds)
+lt     = long ton (2,240 pounds)
+mt     = metric tonne (1,000 kg)
 
 The velocity value can be an integer or floating point value with an optional suffix from the following list. If no suffix is provided then the value is expected to be in fps (feet per second).
 
 f | fps = Feet per second
 m | mps = Meters per second
+k | kmph = Kilometers per hour
 mph = Miles per hour
 ```
 

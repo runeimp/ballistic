@@ -1,13 +1,17 @@
 
 
+PROJECT_NAME = 'Ballistic'
+BINARY_NAME = 'ballistic'
+
+
 @_list-recipes:
-	term-wipe
+	just _term-lw "{{PROJECT_NAME}}"
 	just --list
 
 
 # Build the app for the current OS/Architecture
 @build-app:
-	term-wipe
+	just _term-wipe
 	just _build-app
 	
 _build-app:
@@ -134,7 +138,7 @@ _list-dir path='.':
 
 # Run the app
 run +args='':
-	@term-wipe
+	@just _term-wipe
 	@just _run {{args}}
 
 @_run +args='':
@@ -146,13 +150,47 @@ run +args='':
 
 # Run time tests with timeit
 speed:
-	@term-wipe
+	@just _term-wipe
 	timeit ./ballistic RuneImp "./ballistic RuneImp 'Command Line'"
+
+
+# Terminal Helper
+term +args='wipe':
+	@just _term-{{args}}
+
+# Helper recipe to change the terminal label
+_term-label label:
+	@printf "\033]0;{{label}}\007"
+
+# Helper recipe to change the terminal label, and echo
+_term-le label:
+	@just _term-label "{{label}}"
+	@echo "{{label}}"
+
+# Helper recipe to echo, and wipe the buffer
+_term-we label:
+	@just _term-wipe
+	@echo "{{label}}"
+
+# Helper recipe to change the terminal label, echo, and wipe the buffer
+_term-lwe label:
+	@just _term-label "{{label}}"
+	@just _term-wipe
+	@echo "{{label}}"
+
+# Helper recipe to change the terminal label and wipe the buffer
+_term-lw label:
+	@just _term-label "{{label}}"
+	@just _term-wipe
+
+# Helper recipe to wipe the terminal buffer
+_term-wipe:
+	@test -x "`which term-wipe 2>/dev/null`" && term-wipe || clear
 
 
 # Test all examples
 test:
-	@term-wipe
+	@just _term-wipe
 	@echo
 	./ballistic 'Command Line'
 	@echo
@@ -160,6 +198,6 @@ test:
 
 # Prints the compiler or interpreter version(s)
 ver:
-	@term-wipe
+	@just _term-wipe
 	@go version
 

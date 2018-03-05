@@ -1,5 +1,5 @@
-Ballistic
-=========
+Ballistic v0.1.0
+================
 
 Command line ballistics calculator
 

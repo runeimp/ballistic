@@ -793,9 +793,9 @@ func main() {
 				if len(c.String("velocity")) == 0 {
 					if len(c.String("mass")) == 0 {
 						if len(c.String("radius")) == 0 {
-							fmt.Println("HELP")
+							fmt.Println("Help goes here!")
 							// ShowAppHelp(c)
-							c.printHelp()
+							// c.printHelp()
 						}
 					}
 				}

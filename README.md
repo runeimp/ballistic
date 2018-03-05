@@ -56,3 +56,23 @@ There are many online resources to help with calculating ballistics for guns and
 
 
 
+Formulas
+--------
+
+Note: These formulas are here for my tracking purposes. They are not necessarily used in the app.
+
+```
+PE = mass * gravity * height
+
+Energy = pressure * volume / efficiency
+```
+
+PE = Potential Energy
+
+
+- [PSI to Energy][]
+
+
+
+
+[PSI to Energy]: https://www.physicsforums.com/threads/psi-to-kw-conversion.700882/

@@ -688,6 +688,10 @@ func main() {
 			Name: "draw-length, length, l",
 			Usage: "Bow or sling shot draw `LENGTH`. Used to calculate projectile velocity, energy, etc.",
 		},
+		// cli.BoolFlag{
+		// 	Name: "help, h",
+		// 	Usage: "Output this help info",
+		// },
 		cli.BoolFlag{
 			Name: "json, j",
 			Usage: "Output JSON data",
@@ -728,33 +732,35 @@ func main() {
 		Usage: "Print the ballistic version",
 	}
 
-	app.Commands = []cli.Command{
-		{
-			Name: "mpbr",
-			Usage: "Calculates the maximum point blank range or a weapon.",
-			Flags: []cli.Flag {
-				cli.StringFlag{
-					Name: "radius, r",
-					Usage: "The `RADIUS` of the target area",
-				},
-				cli.StringFlag{
-					Name: "velocity, v",
-					Usage: "The projectile `VELOCITY` or SPEED",
-				},
-			},
-			Action:  func(c *cli.Context) error {
-				log.Printf("  radius: %f", c.Float64("radius"))
-				log.Printf("velocity: %f", c.Float64("velocity"))
-				// radius := strconv.ParseFloat(c.String("radius"), 64)
-				// velocity := strconv.ParseFloat(c.String("velocity"), 64)
-				// calc_mpbr(c.Float64("radius"), c.Float64("velocity"))
-				return nil
-			},
-		},
-	}
+	// app.HideHelp = true
+	// app.Commands = []cli.String{}
+	// app.Commands = []cli.Command{
+	// 	{
+	// 		Name: "mpbr",
+	// 		Usage: "Calculates the maximum point blank range or a weapon.",
+	// 		Flags: []cli.Flag {
+	// 			cli.StringFlag{
+	// 				Name: "radius, r",
+	// 				Usage: "The `RADIUS` of the target area",
+	// 			},
+	// 			cli.StringFlag{
+	// 				Name: "velocity, v",
+	// 				Usage: "The projectile `VELOCITY` or SPEED",
+	// 			},
+	// 		},
+	// 		Action:  func(c *cli.Context) error {
+	// 			log.Printf("  radius: %f", c.Float64("radius"))
+	// 			log.Printf("velocity: %f", c.Float64("velocity"))
+	// 			// radius := strconv.ParseFloat(c.String("radius"), 64)
+	// 			// velocity := strconv.ParseFloat(c.String("velocity"), 64)
+	// 			// calc_mpbr(c.Float64("radius"), c.Float64("velocity"))
+	// 			return nil
+	// 		},
+	// 	},
+	// }
 
 	sort.Sort(cli.FlagsByName(app.Flags))
-	sort.Sort(cli.CommandsByName(app.Commands))
+	// sort.Sort(cli.CommandsByName(app.Commands))
 
 	app.Action = func(c *cli.Context) error {
 		output_debug = c.Bool("debug")
@@ -773,13 +779,27 @@ func main() {
 
 		if output_debug {
 			fmt.Println("Going Ballistic!")
-			log.Printf("        draw length: %9s (str)", c.String("draw-length"))
-			log.Printf("        draw weight: %9s (str)", c.String("draw-weight"))
-			log.Printf("      target radius: %9s (str)", c.String("radius"))
-			log.Printf("projectile velocity: %9s (str)", c.String("velocity"))
-			log.Printf("    projectile mass: %9s (str)", c.String("mass"))
+			log.Printf("        draw length: %9s (%d)", c.String("draw-length"), len(c.String("draw-length")))
+			log.Printf("        draw weight: %9s (%d)", c.String("draw-weight"), len(c.String("draw-length")))
+			log.Printf("      target radius: %9s (%d)", c.String("radius"), len(c.String("draw-length")))
+			log.Printf("projectile velocity: %9s (%d)", c.String("velocity"), len(c.String("draw-length")))
+			log.Printf("    projectile mass: %9s (%d)", c.String("mass"), len(c.String("draw-length")))
 			// log.Println("")
 			// fmt.Println("")
+		}
+
+		if len(c.String("draw-length")) == 0 {
+			if len(c.String("draw-weight")) == 0 {
+				if len(c.String("velocity")) == 0 {
+					if len(c.String("mass")) == 0 {
+						if len(c.String("radius")) == 0 {
+							fmt.Println("HELP")
+							// ShowAppHelp(c)
+							c.printHelp()
+						}
+					}
+				}
+			}
 		}
 
 		if len(c.String("draw-length")) > 0 {

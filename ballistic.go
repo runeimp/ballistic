@@ -25,50 +25,82 @@ import (
 //
 // CONSTANTS
 //
-const FORCE_TO_NEWTONS float64 = 9.80665 // kg times meters per second squared
+const ENERGY_FROM_JOULES_TO_FOOTPOUNDS = 0.737562
+const ENERGY_LABEL_FOOTPOUNDS = "foot-pounds"
+const ENERGY_LABEL_JOULES = "joules"
+
+const FORCE_FROM_KILOGRAMS_TO_NEWTONS float64 = 9.80665 // kg times meters per second squared
+const FORCE_LABEL_NEWTONS string = "newtons"
+const FORCE_LABEL_FOOTPOUNDS = "foot-pounds"
 const GRAVITY_MPS float64 = 9.80665 // kg times meters per second squared
 
-const LENGTH_CENTIMETERS_TO_METERS float64 = 0.01
-const LENGTH_FEET_TO_METERS float64 = 0.3048
-const LENGTH_INCHES_TO_CM float64 = 2.54
-const LENGTH_INCHES_TO_METERS float64 = 0.0254
-const LENGTH_KILOMETERS_TO_METERS float64 = 1000.0
-const LENGTH_METERS_TO_CENTIMETERS float64 = 100
-const LENGTH_METERS_TO_FEET float64 = 3.28084
-const LENGTH_METERS_TO_INCHES float64 = 39.3701
-const LENGTH_METERS_TO_KILOMETERS float64 = 0.001
-const LENGTH_METERS_TO_MILES float64 = 0.000621371
-const LENGTH_METERS_TO_MILLIMETERS float64 = 1000
-const LENGTH_METERS_TO_NAUTICAL_MILES float64 = 0.000539957
-const LENGTH_MILES_TO_METERS float64 = 1609.34
-const LENGTH_MILLIMETERS_TO_METERS float64 = 0.001
-const LENGTH_NAUTICAL_MILES_TO_METERS float64 = 1852
-const LENGTH_YARDS_TO_METERS float64 = 0.9144
+const MOMENTUM_LABEL_FPS = "foot-pound per second"
+const MOMENTUM_LABEL_MKS = "meter kilogram per second"
+const MOMENTUM_LABEL_NS = "newton second"
 
-const MASS_GRAINS_TO_GRAMS float64 = 0.0647989
-const MASS_GRAINS_TO_KILOGRAMS float64 = 0.0000647989
-const MASS_GRAMS_TO_KILOGRAMS float64 = 0.001
-const MASS_POUNDS_TO_GRAMS float64 = 453.592
-const MASS_POUNDS_TO_KILOGRAMS float64 = 0.453592
-const MASS_STONE_TO_GRAMS float64 = 6350.288
-const MASS_STONE_TO_KILOGRAMS float64 = 6.350288
-const MASS_STONE_TO_POUNDS float64 = 14.0
-const MASS_TONS_LONG_TO_GRAMS float64 = 1016047.203454
-const MASS_TONS_LONG_TO_KILOGRAMS float64 = 1016.047203454
-const MASS_TONS_METRIC_TO_GRAMS float64 = 1000000.0
-const MASS_TONS_METRIC_TO_KILOGRAMS float64 = 1000.0
-const MASS_TONS_SHORT_TO_GRAMS float64 = 907185.0
-const MASS_TONS_SHORT_TO_KILOGRAMS float64 = 907.185
+const LENGTH_FROM_CENTIMETERS_TO_METERS float64 = 0.01
+const LENGTH_FROM_FEET_TO_METERS float64 = 0.3048
+const LENGTH_FROM_INCHES_TO_CM float64 = 2.54
+const LENGTH_FROM_INCHES_TO_METERS float64 = 0.0254
+const LENGTH_FROM_KILOMETERS_TO_METERS float64 = 1000.0
+const LENGTH_FROM_METERS_TO_CENTIMETERS float64 = 100
+const LENGTH_FROM_METERS_TO_FEET float64 = 3.28084
+const LENGTH_FROM_METERS_TO_INCHES float64 = 39.3701
+const LENGTH_FROM_METERS_TO_KILOMETERS float64 = 0.001
+const LENGTH_FROM_METERS_TO_MILES float64 = 0.000621371
+const LENGTH_FROM_METERS_TO_MILLIMETERS float64 = 1000
+const LENGTH_FROM_METERS_TO_NAUTICAL_MILES float64 = 0.000539957
+const LENGTH_FROM_MILES_TO_METERS float64 = 1609.34
+const LENGTH_FROM_MILLIMETERS_TO_METERS float64 = 0.001
+const LENGTH_FROM_NAUTICAL_MILES_TO_METERS float64 = 1852
+const LENGTH_FROM_YARDS_TO_METERS float64 = 0.9144
+const LENGTH_LABEL_CENTIMETER = "centimeters"
+const LENGTH_LABEL_FOOT = "feet"
+const LENGTH_LABEL_INCH = "inches"
+const LENGTH_LABEL_KILOMETER = "kilometers"
+const LENGTH_LABEL_METER = "meters"
+const LENGTH_LABEL_MILE = "miles"
+const LENGTH_LABEL_MILLIMETER = "millimeters"
+const LENGTH_LABEL_NAUTICAL_MILE = "nautical miles"
+const LENGTH_LABEL_YARD = "yards"
 
-const VELOCITY_FPS_TO_MPS float64 = 0.3048
-const VELOCITY_KMPH_TO_MPS float64 = 0.277778
-const VELOCITY_KNOTS_TO_KMPH float64 = 1.852
-const VELOCITY_KNOTS_TO_MPS float64 = 0.514444
-const VELOCITY_MPH_TO_MPS float64 = 0.44704
-const VELOCITY_MPS_TO_FPS float64 = 3.28084
-const VELOCITY_MPS_TO_KMPH float64 = 3.6
-const VELOCITY_MPS_TO_KNOTS float64 = 1.94384
-const VELOCITY_MPS_TO_MPH float64 = 2.23694
+const MASS_FROM_GRAINS_TO_GRAMS float64 = 0.0647989
+const MASS_FROM_GRAINS_TO_KILOGRAMS float64 = 0.0000647989
+const MASS_FROM_GRAMS_TO_KILOGRAMS float64 = 0.001
+const MASS_FROM_KILOGRAMS_TO_POUNDS float64 = 2.20462
+const MASS_FROM_POUNDS_TO_GRAMS float64 = 453.592
+const MASS_FROM_POUNDS_TO_KILOGRAMS float64 = 0.453592
+const MASS_FROM_STONE_TO_GRAMS float64 = 6350.288
+const MASS_FROM_STONE_TO_KILOGRAMS float64 = 6.350288
+const MASS_FROM_STONE_TO_POUNDS float64 = 14.0
+const MASS_FROM_TONS_LONG_TO_GRAMS float64 = 1016047.203454
+const MASS_FROM_TONS_LONG_TO_KILOGRAMS float64 = 1016.047203454
+const MASS_FROM_TONS_METRIC_TO_GRAMS float64 = 1000000.0
+const MASS_FROM_TONS_METRIC_TO_KILOGRAMS float64 = 1000.0
+const MASS_FROM_TONS_SHORT_TO_GRAMS float64 = 907185.0
+const MASS_FROM_TONS_SHORT_TO_KILOGRAMS float64 = 907.185
+const MASS_LABEL_GRAINS = "grains"
+const MASS_LABEL_GRAMS = "grams"
+const MASS_LABEL_LONG_TON = "long ton"
+const MASS_LABEL_METRIC_TONNE = "metric tonne"
+const MASS_LABEL_POUNDS = "pounds"
+const MASS_LABEL_SHORT_TON = "short ton"
+const MASS_LABEL_STONE = "stone"
+
+const VELOCITY_FROM_FPS_TO_MPS float64 = 0.3048
+const VELOCITY_FROM_KMPH_TO_MPS float64 = 0.277778
+const VELOCITY_FROM_KNOTS_TO_KMPH float64 = 1.852
+const VELOCITY_FROM_KNOTS_TO_MPS float64 = 0.514444
+const VELOCITY_FROM_MPH_TO_MPS float64 = 0.44704
+const VELOCITY_FROM_MPS_TO_FPS float64 = 3.28084
+const VELOCITY_FROM_MPS_TO_KMPH float64 = 3.6
+const VELOCITY_FROM_MPS_TO_KNOTS float64 = 1.94384
+const VELOCITY_FROM_MPS_TO_MPH float64 = 2.23694
+const VELOCITY_LABEL_FPS = "feet per second"
+const VELOCITY_LABEL_KMPH = "kilometers per hour"
+const VELOCITY_LABEL_KNOTS = "knots"
+const VELOCITY_LABEL_MPH = "miles per hour"
+const VELOCITY_LABEL_MPS = "meters per second"
 
 
 var /* const */ VALUE_RE = regexp.MustCompile("([0-9]*[0-9.]?[0-9]*)([a-z#]*)")
@@ -90,6 +122,14 @@ type BallisticData struct {
 	projectile_mass ParsedData
 	projectile_velocity ParsedData
 	target_radius ParsedData
+}
+
+type InputUnits struct {
+	length string
+	mass string
+	metric bool
+	velocity string
+	weight string
 }
 
 type LabeledValue struct {
@@ -117,17 +157,66 @@ type ParsedData struct {
 //
 var data BallisticData
 var output OutputData
+var input_units InputUnits
+var output_debug bool = false
+var output_json bool = false
 
 
 //
 // FUNCTIONS
 //
+
+/** Build output data */
+func buildOutputData(data BallisticData) {
+
+	if data.projectile_velocity.value > 0 {
+		output.velocity = velocity_to_velocity(data)
+	}
+	
+	output.energy = calc_energy(data)
+	output.momentum = calc_momentum(data)
+
+	if output_debug {
+		fmt.Println("")
+		fmt.Println("Internal Metric:")
+		if data.projectile_velocity.value > 0 {
+			fmt.Printf("  Projectile Velocity: %12.6f %s\n", data.projectile_velocity.value, data.projectile_velocity.label)
+		}
+		if output.energy.value > 0 {
+			fmt.Printf("    Projectile Energy: %12.6f %s\n", output.energy.value, output.energy.label)
+		}
+		if output.momentum.value > 0 {
+			fmt.Printf("  Projectile Momentum: %12.6f %s\n", output.momentum.value, output.momentum.label)
+		}
+		if data.mpbr.value > 0 {
+			fmt.Printf("Max Point Blank Range: %12.6f %s\n", data.mpbr.value, data.mpbr.label)
+		}
+		fmt.Println("") 
+	}
+
+	if input_units.metric == false {
+		output.energy.value *= ENERGY_FROM_JOULES_TO_FOOTPOUNDS
+		output.energy.label = ENERGY_LABEL_FOOTPOUNDS
+
+		output.momentum.value *= MASS_FROM_KILOGRAMS_TO_POUNDS * VELOCITY_FROM_MPS_TO_FPS
+		output.momentum.label = MOMENTUM_LABEL_FPS
+	}
+
+	if data.mpbr.value > 0 {
+		if output_debug { fmt.Printf("MPBR %f %s\n", data.mpbr.value, data.mpbr.label) }
+		output.mpbr = mpbr_to_mpbr(data)
+		if output_debug { fmt.Printf("MPBR %f %s\n", output.mpbr.value, output.mpbr.label) }
+	}
+}
+
+
 /** Calculate drop in flight */
 func calc_drop(distance, velocity float64) (drop float64) {
 	flight_time := distance / velocity
 	drop = GRAVITY_MPS * 0.5 * (flight_time * flight_time)
 	return drop
 }
+
 
 /** Calculate energy */
 func calc_energy(data BallisticData) (energy LabeledValue) {
@@ -136,7 +225,13 @@ func calc_energy(data BallisticData) (energy LabeledValue) {
 	velocity_mps := data.projectile_velocity.value
 
 	energy.value = mass_kg * velocity_mps * velocity_mps
-	energy.label = "joule"
+	energy.label = ENERGY_LABEL_JOULES
+
+	if output_debug {
+		log.Printf("calc_energy()   <| mass: %f kg", mass_kg)
+		log.Printf("calc_energy()   <| velocity: %f mps", velocity_mps)
+		log.Printf("calc_energy()    | energy: %f %s", energy.value, energy.label)
+	}
 
 	return energy
 }
@@ -144,8 +239,14 @@ func calc_energy(data BallisticData) (energy LabeledValue) {
 
 /** Calculate force Newtons */ 
 func calc_force(avg_draw_weight float64) (draw_force ParsedData) {
-	draw_force.value = avg_draw_weight * GRAVITY_MPS
-	draw_force.label = "newton"
+	draw_force.value = avg_draw_weight * FORCE_FROM_KILOGRAMS_TO_NEWTONS
+	draw_force.label = FORCE_LABEL_NEWTONS
+
+	if output_debug {
+		log.Printf("calc_force()    <| avg_draw_weight: %f kg", avg_draw_weight)
+		log.Printf("calc_force()     | draw_force: %f %s", draw_force.value, draw_force.label)
+	}
+	
 	return draw_force
 }
 
@@ -157,8 +258,14 @@ func calc_momentum(data BallisticData) (momentum LabeledValue) {
 	velocity_mps := data.projectile_velocity.value
 
 	momentum.value = mass_kg * velocity_mps
-	momentum.label = "kilogram meters per second"
+	momentum.label = MOMENTUM_LABEL_MKS
 
+	if output_debug {
+		log.Printf("calc_momentum() <| mass: %f kg", mass_kg)
+		log.Printf("calc_momentum() <| velocity: %f mps", velocity_mps)
+		log.Printf("calc_momentum()  | momentum: %f %s", momentum.value, momentum.label)
+	}
+		
 	return momentum
 }
 
@@ -204,7 +311,7 @@ func calc_mpbr(data BallisticData) (mpbr ParsedData) {
 	}
 
 	mpbr.value = distance
-	mpbr.label = "meter"
+	mpbr.label = "meters"
 
 	// log.Printf("calc_mpbr() <|   target radius: %12.6f m", data.target_radius.value)
 	// log.Printf("calc_mpbr() <| target diameter: %12.6f m", diameter)
@@ -225,12 +332,23 @@ func calc_velocity(data BallisticData) (projectile_velocity ParsedData) {
 	release_time := math.Sqrt(projectile_mass * draw_length / draw_force)
 
 	projectile_velocity.value = draw_length / release_time
-	projectile_velocity.label = "meters per second"
+	projectile_velocity.label = VELOCITY_LABEL_MPS
 
-	// log.Printf("calc_velocity() <|     projectile mass: %15.6f kg", projectile_mass)
-	// log.Printf("calc_velocity() <|         draw length: %15.6f m", draw_length)
-	// log.Printf("calc_velocity() <|          draw force: %15.6f N", draw_force)
-	// log.Printf("calc_velocity()  | projectile velocity: %15.6f mps", projectile_velocity.value)
+	if len(input_units.velocity) == 0 {
+		if input_units.metric {
+			input_units.velocity = VELOCITY_LABEL_MPS
+		} else {
+			input_units.velocity = VELOCITY_LABEL_FPS
+		}
+	}
+
+	if output_debug {
+		log.Printf("calc_velocity() <|     projectile mass: %15.6f kg", projectile_mass)
+		log.Printf("calc_velocity() <|         draw length: %15.6f m", draw_length)
+		log.Printf("calc_velocity() <|          draw force: %15.6f N", draw_force)
+		log.Printf("calc_velocity()  | projectile velocity: %15.6f mps", projectile_velocity.value)
+	}
+
 	return projectile_velocity
 }
 
@@ -240,48 +358,41 @@ func mpbr_to_mpbr(data BallisticData) (mpbr LabeledValue) {
 	mpbr.label = ""
 	mpbr.value = 0.0
 
-	switch data.projectile_velocity.user_label {
-	case "feet per second":
-		mpbr.label = "foot"
-		mpbr.value = data.mpbr.value * LENGTH_METERS_TO_FEET
-	case "kilometers per hour":
-		mpbr.label = "kilometer"
-		mpbr.value = data.mpbr.value * LENGTH_METERS_TO_KILOMETERS
-	case "knots":
-		mpbr.label = "nautical mile"
-		mpbr.value = data.mpbr.value * LENGTH_METERS_TO_NAUTICAL_MILES
-	case "meters per second":
-		mpbr.label = "meter"
+	user_label := data.projectile_velocity.user_label
+	if len(user_label) == 0 {
+		user_label = input_units.velocity
+	}
+
+	switch user_label {
+	case VELOCITY_LABEL_FPS:
+		mpbr.label = LENGTH_LABEL_FOOT
+		mpbr.value = data.mpbr.value * LENGTH_FROM_METERS_TO_FEET
+	case VELOCITY_LABEL_KMPH:
+		mpbr.label = LENGTH_LABEL_KILOMETER
+		mpbr.value = data.mpbr.value * LENGTH_FROM_METERS_TO_KILOMETERS
+	case VELOCITY_LABEL_KNOTS:
+		mpbr.label = LENGTH_LABEL_NAUTICAL_MILE
+		mpbr.value = data.mpbr.value * LENGTH_FROM_METERS_TO_NAUTICAL_MILES
+	case VELOCITY_LABEL_MPS:
+		mpbr.label = LENGTH_LABEL_METER
 		mpbr.value = data.mpbr.value
-	case "miles per hour":
-		mpbr.label = "mile"
-		mpbr.value = data.mpbr.value * LENGTH_METERS_TO_MILES
+	case VELOCITY_LABEL_MPH:
+		mpbr.label = LENGTH_LABEL_MILE
+		mpbr.value = data.mpbr.value * LENGTH_FROM_METERS_TO_MILES
+	}
+
+	if output_debug {
+		log.Printf("mpbr_to_mpbr()  <|  projectile velocity: %s", data.projectile_velocity.user_label)
+		log.Printf("mpbr_to_mpbr()  <| input_units velocity: %s", input_units.velocity)
+		log.Printf("mpbr_to_mpbr()   |  projectile velocity: %15.6f mps", mpbr.value, mpbr.label)
 	}
 
 	return mpbr
 }
 
 
-/** Generate output data */
-func output_data(data BallisticData) {
-	if data.projectile_velocity.value > 0 {
-		output.velocity = velocity_to_velocity(data)
-	}
-	
-	output.energy = calc_energy(data)
-	output.momentum = calc_momentum(data)
-
-	if data.mpbr.value > 0 {
-		// fmt.Printf("MPBR ", data.mpbr.value)
-		// output.mpbr.value = data.mpbr.value
-		// output.mpbr.label = velocity_to_length(data.projectile_velocity.label)
-		output.mpbr = mpbr_to_mpbr(data)
-	}
-
-	print_output(output)
-}
-
-func print_output(data OutputData) {
+/** Print Human Readable Output */
+func outputHuman(data OutputData) {
 	fmt.Println("")
 	if data.velocity.value > 0 {
 		fmt.Printf("  Projectile Velocity: %12.6f %s\n", data.velocity.value, data.velocity.label)
@@ -298,10 +409,14 @@ func print_output(data OutputData) {
 	fmt.Println("")
 }
 
+func outputJSON(data OutputData) {
+	fmt.Println("JSON data!")
+}
+
 
 /** Parse user input value and normalize it for internal use */
 func parse_value(value, value_type string) (parsed_data ParsedData) {
-	// log.Printf("parse_value() <| value: %s | value_type: %s", value, value_type)
+	// log.Printf("parse_value()  <| value: %s | value_type: %s", value, value_type)
 
 	if len(value) > 0 {
 		value_match := VALUE_RE.FindStringSubmatch(value)
@@ -319,90 +434,115 @@ func parse_value(value, value_type string) (parsed_data ParsedData) {
 
 			switch suffix {
 			case "feet", "foot", "ft", "f":
-				norm_value = number * LENGTH_FEET_TO_METERS
-				designation = "foot"
+				norm_value = number * LENGTH_FROM_FEET_TO_METERS
+				designation = LENGTH_LABEL_FOOT
+				input_units.metric = false
 			case "inches", "inch", "in", "i":
-				norm_value = number * LENGTH_INCHES_TO_METERS
-				designation = "inch"
+				norm_value = number * LENGTH_FROM_INCHES_TO_METERS
+				designation = LENGTH_LABEL_INCH
+				input_units.metric = false
 			case "nmi", "nm", "M":
 				// Actual Values: M, NM, Nm, nm, nmi
-				norm_value = number * LENGTH_NAUTICAL_MILES_TO_METERS
-				designation = "nautical mile"
+				norm_value = number * LENGTH_FROM_NAUTICAL_MILES_TO_METERS
+				designation = LENGTH_LABEL_NAUTICAL_MILE
 			case "yards", "yard", "yrd", "yd", "y":
-				norm_value = number * LENGTH_YARDS_TO_METERS
-				designation = "yard"
+				norm_value = number * LENGTH_FROM_YARDS_TO_METERS
+				designation = LENGTH_LABEL_YARD
+				input_units.metric = false
 			case "kilometers", "kilometer", "kilo", "km", "k":
-				norm_value = number * LENGTH_KILOMETERS_TO_METERS
-				designation = "kilometer"
+				norm_value = number * LENGTH_FROM_KILOMETERS_TO_METERS
+				designation = LENGTH_LABEL_KILOMETER
+				input_units.metric = true
 			case "meters", "m", "":
 				norm_value = number
-				designation = "meter"
+				designation = LENGTH_LABEL_METER
+				input_units.metric = true
 			case "centimeters", "centimeter", "centi", "cm", "c":
-				norm_value = number * LENGTH_CENTIMETERS_TO_METERS
-				designation = "centimeter"
+				norm_value = number * LENGTH_FROM_CENTIMETERS_TO_METERS
+				designation = LENGTH_LABEL_CENTIMETER
+				input_units.metric = true
 			case "millimeters", "millimeter", "milli", "mm":
-				norm_value = number * LENGTH_MILLIMETERS_TO_METERS
-				designation = "millimeter"
+				norm_value = number * LENGTH_FROM_MILLIMETERS_TO_METERS
+				designation = LENGTH_LABEL_MILLIMETER
+				input_units.metric = true
 			}
-		case VALUE_TYPE_VELOCITY:
-			norm_type = "meters per second"
-
-			switch suffix {
-			case "fps":
-				norm_value = number * VELOCITY_FPS_TO_MPS
-				designation = "feet per second"
-			case "knots", "knot", "kn":
-				norm_value = number * VELOCITY_KNOTS_TO_MPS
-				designation = "knots"
-			case "kmph", "k":
-				norm_value = number * VELOCITY_KMPH_TO_MPS
-				designation = "kilometers per hour"
-			case "mph":
-				norm_value = number * VELOCITY_MPH_TO_MPS
-				designation = "miles per hour"
-			case "mps", "":
-				norm_value = number
-				designation = "meters per second"
-			}
+			input_units.length = designation
 		case VALUE_TYPE_MASS:
 			norm_type = "kilogram"
 
 			switch suffix {
 			case "grams", "g", "":
-				norm_value = number * MASS_GRAMS_TO_KILOGRAMS
-				designation = "grams"
+				norm_value = number * MASS_FROM_GRAMS_TO_KILOGRAMS
+				designation = MASS_LABEL_GRAMS
+				input_units.metric = true
 			case "grains", "gr":
-				norm_value = number * MASS_GRAINS_TO_KILOGRAMS
-				designation = "grains"
+				norm_value = number * MASS_FROM_GRAINS_TO_KILOGRAMS
+				designation = MASS_LABEL_GRAINS
+				input_units.metric = false
 			case "pounds", "#", "lb", "lbs":
-				norm_value = number * MASS_POUNDS_TO_KILOGRAMS
-				designation = "pounds"
+				norm_value = number * MASS_FROM_POUNDS_TO_KILOGRAMS
+				designation = MASS_LABEL_POUNDS
+				input_units.metric = false
 			case "stone", "st":
-				norm_value = number * MASS_STONE_TO_KILOGRAMS
-				designation = "stone"
+				norm_value = number * MASS_FROM_STONE_TO_KILOGRAMS
+				designation = MASS_LABEL_STONE
+				input_units.metric = false
 			case "ton":
-				norm_value = number * MASS_TONS_SHORT_TO_KILOGRAMS
-				designation = "short ton"
+				norm_value = number * MASS_FROM_TONS_SHORT_TO_KILOGRAMS
+				designation = MASS_LABEL_SHORT_TON
+				input_units.metric = false
 			case "lt":
-				norm_value = number * MASS_TONS_LONG_TO_KILOGRAMS
-				designation = "long ton"
+				norm_value = number * MASS_FROM_TONS_LONG_TO_KILOGRAMS
+				designation = MASS_LABEL_LONG_TON
+				input_units.metric = false
 			case "mt":
-				norm_value = number * MASS_TONS_METRIC_TO_KILOGRAMS
-				designation = "metric ton"
+				norm_value = number * MASS_FROM_TONS_METRIC_TO_KILOGRAMS
+				designation = MASS_LABEL_METRIC_TONNE
+				input_units.metric = true
 			}
+			input_units.mass = designation
+		case VALUE_TYPE_VELOCITY:
+			norm_type = "meters per second"
+
+			switch suffix {
+			case "fps":
+				norm_value = number * VELOCITY_FROM_FPS_TO_MPS
+				designation = VELOCITY_LABEL_FPS
+				input_units.metric = false
+			case "knots", "knot", "kn", "kt":
+				norm_value = number * VELOCITY_FROM_KNOTS_TO_MPS
+				designation = VELOCITY_LABEL_KNOTS
+			case "kmph", "k":
+				norm_value = number * VELOCITY_FROM_KMPH_TO_MPS
+				designation = VELOCITY_LABEL_KMPH
+				input_units.metric = true
+			case "mph":
+				norm_value = number * VELOCITY_FROM_MPH_TO_MPS
+				designation = VELOCITY_LABEL_MPH
+				input_units.metric = false
+			case "mps", "":
+				norm_value = number
+				designation = VELOCITY_LABEL_MPS
+				input_units.metric = true
+			}
+			
+			input_units.velocity = designation
 		}
 
-		// log.Printf("parse_value()  | value_match: %s", value_match)
-		// log.Printf("parse_value()  |      number: %f", number)
-		// log.Printf("parse_value()  |      suffix: %s", suffix)
-		// log.Printf("parse_value()  | designation: %s", designation)
-		// log.Printf("parse_value()  |  norm_value: %f", norm_value)
-		// log.Printf("parse_value()  |   norm_type: %s", norm_type)
+		if output_debug {
+			// log.Printf("parse_value()   <| value_match: %s", value_match)
+			// log.Printf("parse_value()   <|      number: %f", number)
+			// log.Printf("parse_value()   <|      suffix: %s", suffix)
+			// log.Printf("parse_value()    | designation: %s", designation)
+			// log.Printf("parse_value()    |  norm_value: %f", norm_value)
+			// log.Printf("parse_value()    |   norm_type: %s", norm_type)
 
-		// log.Printf("parse_value() <| %8s value: %17.6f %s (%s)", value_type, number, suffix, designation )
-		// log.Printf("parse_value()  | %8s normilazed: %12.6f %s", value_type, norm_value, norm_type)
-		suffix_designation := suffix + " (" + designation + ")"
-		log.Printf("parse_value() | %8s: %12.6f %-20s | %12.6f %s", value_type, number, suffix_designation, norm_value, norm_type)
+			// log.Printf("parse_value()   <| %8s value: %17.6f %s (%s)", value_type, number, suffix, designation )
+			// log.Printf("parse_value()    | %8s normilazed: %12.6f %s", value_type, norm_value, norm_type)
+
+			suffix_designation := suffix + " (" + designation + ")"
+			log.Printf("parse_value()    | %8s: %12.6f %-20s | %12.6f %s", value_type, number, suffix_designation, norm_value, norm_type)
+		}
 
 		parsed_data.label = norm_type
 		parsed_data.value = norm_value
@@ -414,47 +554,44 @@ func parse_value(value, value_type string) (parsed_data ParsedData) {
 }
 
 
-/** Convert velocity label to length label */
-func velocity_to_length(velocity_label string) (length string) {
-	length = ""
-	switch velocity_label {
-	case "fps":
-		length = "foot"
-	case "knots":
-		length = "nautical mile"
-	case "kilometers per hour":
-		length = "kilometer"
-	case "meters per second":
-		length = "meter"
-	case "miles per hour":
-		length = "mile"
-	}
-
-	return length
-}
-
-
 /** Convert velocity in mps to input units */
 func velocity_to_velocity(data BallisticData) (velocity LabeledValue) {
 	velocity.label = ""
 
-	switch data.projectile_velocity.user_label {
-	case "feet per second":
-		velocity.label = "foot"
-		velocity.value = data.projectile_velocity.value * VELOCITY_MPS_TO_FPS
-	case "kilometers per hour":
-		velocity.label = "kilometer"
-		velocity.value = data.projectile_velocity.value * VELOCITY_MPS_TO_KMPH
-	case "knots":
-		velocity.label = "nautical mile"
-		velocity.value = data.projectile_velocity.value * VELOCITY_MPS_TO_KNOTS
-	case "meters per second":
-		velocity.label = "meter"
-		velocity.value = data.projectile_velocity.value
-	case "miles per hour":
-		velocity.label = "mile"
-		velocity.value = data.projectile_velocity.value * VELOCITY_MPS_TO_MPH
+	user_label := input_units.velocity
+	if len(user_label) == 0 {
+		switch input_units.mass {
+		case MASS_LABEL_GRAINS, MASS_LABEL_LONG_TON, MASS_LABEL_POUNDS, MASS_LABEL_SHORT_TON, MASS_LABEL_STONE:
+			user_label = VELOCITY_LABEL_FPS
+		default:
+			user_label = VELOCITY_LABEL_MPS
+		}
 	}
+
+	switch user_label {
+	case VELOCITY_LABEL_FPS:
+		velocity.label = user_label
+		velocity.value = data.projectile_velocity.value * VELOCITY_FROM_MPS_TO_FPS
+	case VELOCITY_LABEL_KMPH:
+		velocity.label = user_label
+		velocity.value = data.projectile_velocity.value * VELOCITY_FROM_MPS_TO_KMPH
+	case VELOCITY_LABEL_KNOTS:
+		velocity.label = user_label
+		velocity.value = data.projectile_velocity.value * VELOCITY_FROM_MPS_TO_KNOTS
+	case VELOCITY_LABEL_MPS:
+		velocity.label = user_label
+		velocity.value = data.projectile_velocity.value
+	case VELOCITY_LABEL_MPH:
+		velocity.label = user_label
+		velocity.value = data.projectile_velocity.value * VELOCITY_FROM_MPS_TO_MPH
+	}
+
+	// log.Printf("velocity_to_velocity() | user_label: '%s'", user_label)
+	// log.Printf("velocity_to_velocity() | projectile_mass user value & label: %f %s", data.projectile_mass.user_value, data.projectile_mass.user_label)
+	// log.Printf("velocity_to_velocity() | input_units | velocity: '%s' | mass: '%s' | metric: %t", input_units.velocity, input_units.mass, input_units.metric)
+	// log.Printf("velocity_to_velocity() | projectile_velocity user value & label: %f %s", data.projectile_velocity.user_value, data.projectile_velocity.user_label)
+	// log.Printf("velocity_to_velocity() | projectile_velocity norm value & label: %f %s", data.projectile_velocity.value, data.projectile_velocity.label)
+	// log.Printf("velocity_to_velocity() | projectile_velocity calc value & label: %f %s", velocity.value, velocity.label)
 
 	return velocity
 }
@@ -473,17 +610,25 @@ func main() {
 	
 
 	app.Flags = []cli.Flag {
-		cli.StringFlag{
-			Name: "mass, m",
-			Usage: "Projectile `MASS` (weight). Used to calculate projectile velocity, energy, etc.",
+		cli.BoolFlag{
+			Name: "debug, d",
+			Usage: "Output debug info",
+		},
+		cli.BoolFlag{
+			Name: "json, j",
+			Usage: "Output JSON instead of humanistic output",
 		},
 		cli.StringFlag{
-			Name: "draw-weight, draw, d",
+			Name: "draw-weight, weight, w",
 			Usage: "Bow or sling shot draw `WEIGHT`. Used to calculate projectile velocity, energy, etc.",
 		},
 		cli.StringFlag{
 			Name: "draw-length, length, l",
 			Usage: "Bow or sling shot draw `LENGTH`. Used to calculate projectile velocity, energy, etc.",
+		},
+		cli.StringFlag{
+			Name: "mass, m",
+			Usage: "Projectile `MASS` (weight). Used to calculate projectile velocity, energy, etc.",
 		},
 		cli.StringFlag{
 			Name: "radius, r",
@@ -532,24 +677,19 @@ func main() {
 	}
 
 	app.Action = func(c *cli.Context) error {
-		fmt.Println("Going Ballistic!")
-		log.Printf("        draw length: %9s (str)", c.String("draw-length"))
-		log.Printf("        draw weight: %9s (str)", c.String("draw-weight"))
-		log.Printf("      target radius: %9s (str)", c.String("radius"))
-		log.Printf("projectile velocity: %9s (str)", c.String("velocity"))
-		log.Printf("    projectile mass: %9s (str)", c.String("mass"))
-		log.Println("")
-		// value_match := VALUE_RE.FindStringSubmatch(c.String("weight"))
-		// log.Printf("value_match:    %s", value_match)
-		// log.Printf("value_match[1]: %s", value_match[1])
-		// log.Printf("value_match[2]: %s", value_match[2])
+		output_debug = c.Bool("debug")
+		output_json = c.Bool("json")
 
-
-		// var draw_length_meters float64 = 0
-		// var draw_weight_kg float64 = 0
-		// var force_newtons float64 = 0
-		// var projectile_mass_kg float64 = 0
-		// var projectile_velocity float64 = 0
+		if output_debug {
+			fmt.Println("Going Ballistic!")
+			log.Printf("        draw length: %9s (str)", c.String("draw-length"))
+			log.Printf("        draw weight: %9s (str)", c.String("draw-weight"))
+			log.Printf("      target radius: %9s (str)", c.String("radius"))
+			log.Printf("projectile velocity: %9s (str)", c.String("velocity"))
+			log.Printf("    projectile mass: %9s (str)", c.String("mass"))
+			// log.Println("")
+			// fmt.Println("")
+		}
 
 		if len(c.String("draw-length")) > 0 {
 			data.draw_length = parse_value(c.String("draw-length"), VALUE_TYPE_LENGTH)
@@ -565,8 +705,6 @@ func main() {
 		if len(c.String("mass")) > 0 {
 			data.projectile_mass = parse_value(c.String("mass"), VALUE_TYPE_MASS)
 		}
-		// if len(c.String("length")) {}
-		// if len(c.String("length")) {}
 
 		if data.projectile_velocity.value == 0 {
 			if data.projectile_mass.value > 0 && data.draw_length.value > 0 && data.draw_force.value > 0 {
@@ -581,9 +719,13 @@ func main() {
 			}
 		}
 
+		buildOutputData(data)
 
-		output_data(data)
-
+		if output_json {
+			outputJSON(output)
+		} else {
+			outputHuman(output)
+		}
 
 		return nil
 	}

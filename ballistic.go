@@ -363,6 +363,33 @@ func calc_velocity(data BallisticData) (projectile_velocity ParsedData) {
 }
 
 
+/**
+ * Cleans up OutputData for JSON parsing
+ *
+ * Removes top level keys from OutputData when the child fields have no value.
+ * This is necessary because the standard JSON package does not check child
+ * structs if they are empty or not.
+ */
+func cleanupJSON(data OutputData) (data_obj map[string]interface{}) {
+	data_obj = make(map[string]interface{})
+
+	if data.Energy.Value != 0 {
+		data_obj["energy"] = data.Energy
+	}
+	if data.Momentum.Value != 0 {
+		data_obj["momentum"] = data.Momentum
+	}
+	if data.Mpbr.Value != 0 {
+		data_obj["mpbr"] = data.Mpbr
+	}
+	if data.Velocity.Value != 0 {
+		data_obj["velocity"] = data.Velocity
+	}
+
+	return data_obj
+}
+
+
 /** Convert MPBR in meters to input units */
 func mpbr_to_mpbr(data BallisticData) (mpbr LabeledValue) {
 	mpbr.Label = ""
@@ -419,6 +446,8 @@ func outputHuman(data OutputData) {
 	fmt.Println("")
 }
 
+
+/** Outputs JSON data */
 func outputJSON(data OutputData) {
 	if output_debug {
 		fmt.Println("JSON data!")
@@ -427,16 +456,19 @@ func outputJSON(data OutputData) {
 	var err error
 	var json_data []byte
 
+	data_obj := cleanupJSON(data)
+	// data_obj := data
+
 	if output_pretty {
-		json_data, err = json.MarshalIndent(data, "", output_indent)
+		json_data, err = json.MarshalIndent(data_obj, "", output_indent)
 	} else {
-		json_data, err = json.Marshal(data)
+		json_data, err = json.Marshal(data_obj)
 	}
 	// fmt.Printf("json_data: %#v\n", json_data)
 	
 
 	if output_debug {
-		fmt.Printf("err: %v\n", err)
+		log.Printf("err: %v\n", err)
 	}
 	
 	if err == nil {

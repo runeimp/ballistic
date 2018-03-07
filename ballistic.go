@@ -738,7 +738,7 @@ func main() {
 
 	cli.HelpFlag = cli.BoolFlag{
 		Name: "help, h",
-		Usage: "Print this help info",
+		Usage: "Output this help info",
 	}
 
 	cli.AppHelpTemplate = fmt.Sprintf(`
@@ -805,7 +805,7 @@ If most or all of the input values are in imperial units then the output will us
 
 	cli.VersionFlag = cli.BoolFlag{
 		Name: "version, V",
-		Usage: "Print the ballistic version",
+		Usage: "Output the ballistic app version",
 	}
 
 	// app.HideHelp = true
@@ -864,9 +864,25 @@ If most or all of the input values are in imperial units then the output will us
 			// fmt.Println("")
 		}
 
-		if c.NArg() == 0 {
+
+		flags_set := 0
+		for _, flag_name := range c.GlobalFlagNames() {
+			// fmt.Printf("Flag: %s\n", flag_name)
+			flag_value := c.String(flag_name)
+			if len(flag_value) > 0 {
+				if flag_value != "false" && flag_value != "true" {
+					// fmt.Printf("Flag Set: %s\n", flag_value)
+					flags_set += 1
+				}
+			}
+		}
+		// fmt.Printf("Flags Set: %d\n", flags_set)
+
+		if flags_set == 0 {
+			// fmt.Println("No Args!")
 			cli.ShowAppHelpAndExit(c, 0)
 		}
+
 
 		if len(c.String("draw-length")) > 0 {
 			data.draw_length = parse_value(c.String("draw-length"), VALUE_TYPE_LENGTH)
@@ -891,9 +907,11 @@ If most or all of the input values are in imperial units then the output will us
 
 		if len(c.String("radius")) > 0 {
 			data.target_radius = parse_value(c.String("radius"), VALUE_TYPE_LENGTH)
-			if data.projectile_velocity.value > 0 {
-				data.mpbr = calc_mpbr(data)
-			}
+		} else {
+			data.target_radius = parse_value("225mm", VALUE_TYPE_LENGTH)
+		}
+		if data.projectile_velocity.value > 0 {
+			data.mpbr = calc_mpbr(data)
 		}
 
 		buildOutputData(data)

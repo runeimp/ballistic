@@ -24,6 +24,7 @@ _build-app:
 
 @build arg='app':
 	term-wipe
+	rm -rf ./bin
 	# echo "build-{{arg}}"
 	just _build-{{arg}}
 
@@ -62,7 +63,7 @@ build-linux-32bit:
 	just _build-linux
 
 @_build-linux:
-	just _build linux-amd64 linux amd64
+	just _build linux linux amd64
 
 # Build the Linux (ARM7) binary
 build-linux-arm7:
@@ -82,12 +83,16 @@ build-linux-arm7:
 
 # Build most OS/Architecture binarys
 @build-most:
+	just _build-most
+
+@_build-most:
 	just _term-wipe
 	just _build-linux
 	just _build-macos
 	just _build-win32
 	just _build-windows
 	just _list-bin
+
 
 # Build the OS X (32-bit) binary
 build-osx:
@@ -137,6 +142,43 @@ build-pi:
 	rm -rf bin
 	just _list-dir
 
+# Setup distrobutions
+distro:
+	#!/usr/bin/env sh
+	just _term-wipe
+	rm -rf ./distro
+	for binpath in ./bin/*/ballistic*; do
+		pathname=`dirname "$binpath"`
+		distname="ballistic-v${VERSION}-${pathname:6}"
+		distpath="./distro/${distname}"
+		# echo " \$binpath: $binpath"
+		# echo "\$pathname: $pathname"
+		# echo "\$distname: $distname"
+		# echo "\$distpath: $distpath"
+		mkdir -p "./distro/$distname"
+		echo
+		cp "$binpath" "${distpath}/"
+		cp "README.md" "${distpath}/"
+		just _list-dir ${distpath}
+		just _dirzip "$distpath"
+		echo
+
+		# echo "${pathname}"
+	done
+	just _list-dir ./distro
+
+
+_dirzip path:
+	#!/usr/bin/env sh
+	child=`basename "{{path}}"`
+	parent=`dirname "{{path}}"`
+	echo "DirZip: {{path}}"
+	# echo "  dirzip path: {{path}}"
+	# echo " dirzip child: ${child}"
+	# echo "dirzip parent: ${parent}"
+	cd "${parent}"
+	ditto -ck --keepParent --zlibCompressionLevel 9 --norsrc --noqtn --nohfsCompression "${child}" "${child}.zip"
+
 # Just info
 @info:
 	term-wipe
@@ -156,8 +198,10 @@ _list-bin:
 _list-dir path='.':
 	#!/usr/bin/env sh
 	if [ '{{os()}}' = 'macos' ]; then
+		echo '$ ls -AlhG "{{path}}"'
 		ls -AlhG "{{path}}"
 	else
+		echo '$ ls -Alh --color "{{path}}"'
 		ls -Alh --color "{{path}}"
 	fi
 

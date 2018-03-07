@@ -8,13 +8,10 @@ Features
 --------
 
 - Calculate:
-	- Projectile drop at distance
-	- Projectile energy and velocity at distance
-	- Projectile weight given distance and velocity
-	- Projectile momentum at distance
-	- Projectile penetration reference
-	- <abbr title="Maximum Point Blank Range">MPBR</abbr>: Maximum Point Blank Range or Battle Zero is a military term refering the maximum distance a weapon can be fired to hit the torso of a human target (roughly 18&times;9 inches) every time (baring extreme weather or cover conditions) when aiming at the center of mass.
-	- Compound Bow (modern cambered bow): projectile energy and velocity 
+	- Projectile energy
+	- Projectile momentum
+	- Projectile velocity
+	- MPBR: Maximum Point Blank Range or Battle Zero is a military term refering the maximum distance a weapon can be fired to hit the torso of a human target (roughly 18&times;9 inches) every time (baring extreme weather or cover conditions) when aiming at the center of mass.
 - Output
 	- Human formated for interactive usage
 	- JSON formated for easy scripting
@@ -87,6 +84,21 @@ Rational
 There are many online resources to help with calculating ballistics for guns and more archaic weapons such as bows, slings, etc. But there are few command line tools. I like command line tools. They don't require a working Internet connection. They can also be piped into a toolchain to help with automating processes. That's often difficult or next to impossible with most online tools.
 
 
+### `Justfile`
+
+This is my choice over using `make` to facilitates building the binaries and creating distrobutions. I use [`just`][] which is such a great command runner in the style of `make`! But without the many issues associated with using one of the many, many different versions of `make`. I can barely express the love I have for such tools. I highly recommend it!
+
+
+ToDo
+----
+
+- Calculate:
+	- Projectile drop at distance
+	- Projectile momentum at distance
+	- Projectile mass given distance and velocity
+	- Projectile penetration reference (WIP momentum + ballistic coefficient)
+	- Compound Bow (modern cambered bow): projectile energy and velocity
+
 
 Formulas
 --------
@@ -107,4 +119,7 @@ PE = Potential Energy
 
 
 
+[`just`]: https://github.com/casey/just
 [PSI to Energy]: https://www.physicsforums.com/threads/psi-to-kw-conversion.700882/
+
+

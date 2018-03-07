@@ -35,7 +35,7 @@ const ENERGY_LABEL_JOULES = "joules"
 const FORCE_FROM_KILOGRAMS_TO_NEWTONS float64 = 9.80665 // kg times meters per second squared
 const FORCE_LABEL_NEWTONS string = "newtons"
 const FORCE_LABEL_FOOTPOUNDS = "foot-pounds"
-const GRAVITY_MPS float64 = 9.80665 // kg times meters per second squared
+const GRAVITY_MPS float64 = 9.80665 // meters per second squared
 
 const MOMENTUM_LABEL_FPS = "foot-pound per second"
 const MOMENTUM_LABEL_MKS = "meter kilogram per second"
@@ -221,10 +221,23 @@ func buildOutputData(data BallisticData) {
 
 
 /** Calculate drop in flight */
-func calc_drop(distance, velocity float64) (drop float64) {
+func calcDropAtDistance(distance, velocity float64) (drop float64) {
 	flight_time := distance / velocity
 	drop = GRAVITY_MPS * 0.5 * (flight_time * flight_time)
 	return drop
+}
+
+func calcDistanceForDrop(drop, velocity float64) (distance float64) {
+	distance = drop * velocity
+	// G * 0.5 * Squared(distance / velocity) = drop
+	// 9.80665 * 0.5 = 4.903325 * Squared(distance / 500) = 1m
+	// 4.903325 / 1m = 4.903325
+
+	//  GRAVITY
+	//     Gm1m2
+	// F = ------
+	//       r2
+	return distance
 }
 
 
@@ -289,35 +302,35 @@ func calc_mpbr(data BallisticData) (mpbr ParsedData) {
 
 	for drop < diameter || drop == 0.0 {
 		distance += 1.0
-		drop = calc_drop(distance, velocity)
+		drop = calcDropAtDistance(distance, velocity)
 	}
 	for drop > diameter {
 		distance -= 0.1
-		drop = calc_drop(distance, velocity)
+		drop = calcDropAtDistance(distance, velocity)
 	}
 	for drop < diameter {
 		distance += 0.01
-		drop = calc_drop(distance, velocity)
+		drop = calcDropAtDistance(distance, velocity)
 	}
 	for drop > diameter {
 		distance -= 0.001
-		drop = calc_drop(distance, velocity)
+		drop = calcDropAtDistance(distance, velocity)
 	}
 	for drop < diameter {
 		distance += 0.0001
-		drop = calc_drop(distance, velocity)
+		drop = calcDropAtDistance(distance, velocity)
 	}
 	for drop > diameter {
 		distance -= 0.00001
-		drop = calc_drop(distance, velocity)
+		drop = calcDropAtDistance(distance, velocity)
 	}
 	for drop < diameter {
 		distance += 0.000001
-		drop = calc_drop(distance, velocity)
+		drop = calcDropAtDistance(distance, velocity)
 	}
 	for drop > diameter {
 		distance -= 0.0000001
-		drop = calc_drop(distance, velocity)
+		drop = calcDropAtDistance(distance, velocity)
 	}
 
 	mpbr.value = distance
@@ -788,18 +801,8 @@ func main() {
 			// fmt.Println("")
 		}
 
-		if len(c.String("draw-length")) == 0 {
-			if len(c.String("draw-weight")) == 0 {
-				if len(c.String("velocity")) == 0 {
-					if len(c.String("mass")) == 0 {
-						if len(c.String("radius")) == 0 {
-							fmt.Println("Help goes here!")
-							// ShowAppHelp(c)
-							// c.printHelp()
-						}
-					}
-				}
-			}
+		if c.NArg() == 0 {
+			cli.ShowAppHelpAndExit(c, 0)
 		}
 
 		if len(c.String("draw-length")) > 0 {

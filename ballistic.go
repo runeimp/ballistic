@@ -28,6 +28,7 @@ import (
 //
 // CONSTANTS
 //
+const APP_VERSION = "0.2.0"
 const ENERGY_FROM_JOULES_TO_FOOTPOUNDS = 0.737562
 const ENERGY_LABEL_FOOTPOUNDS = "foot-pounds"
 const ENERGY_LABEL_JOULES = "joules"
@@ -686,7 +687,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "Ballistic"
 	app.Usage = "Calculates what it can based on provided input."
-	app.Version = "0.1.0"
+	app.Version = APP_VERSION
 
 	app.Flags = []cli.Flag {
 		cli.BoolFlag{
@@ -739,6 +740,68 @@ func main() {
 		Name: "help, h",
 		Usage: "Print this help info",
 	}
+
+	cli.AppHelpTemplate = fmt.Sprintf(`
+NAME:
+   {{.Name}}{{if .Usage}} - {{.Usage}}{{end}}
+
+USAGE:
+   {{if .UsageText}}{{.UsageText}}{{else}}{{.HelpName}} {{if .VisibleFlags}}[global options]{{end}}{{end}}{{if .Version}}{{if not .HideVersion}}
+
+VERSION:
+   {{.Version}}{{end}}{{end}}{{if .Description}}
+
+DESCRIPTION:
+   {{.Description}}{{end}}{{if len .Authors}}
+
+AUTHOR{{with $length := len .Authors}}{{if ne 1 $length}}S{{end}}{{end}}:
+   {{range $index, $author := .Authors}}{{if $index}}
+   {{end}}{{$author}}{{end}}{{end}}{{if .VisibleCommands}}
+
+GLOBAL OPTIONS:
+   {{range $index, $option := .VisibleFlags}}{{if $index}}
+   {{end}}{{$option}}{{end}}{{end}}{{if .Copyright}}
+
+COPYRIGHT:
+   {{.Copyright}}{{end}}
+
+VALUE SUFFIXES:
+  All input values may be suffixed to allow for broader input selection.
+
+  LENGTH
+    c, cm, centi, centimeter, centimeters
+    f, ft, foot, feet
+    i, in, inch, inches
+    k, km, kilo, kilometer, kilometers
+    m, meters †
+    M, NM, Nm, nm, nmi  (Nautical Miles)
+    mm, milli, millimeter, millimeters
+    y, yd, yrd, yard, yards
+  MASS
+    #, lb, lbs, pound, pounds
+    g, gram, grams
+    gr, grain, grains
+    kg, kilo, kilogram, kilograms †
+    lt, long-ton
+    mt, tonne, metric-tonne
+    st, stone
+    t, ton, short-ton
+  VELOCITY
+    fps, feet-per-second
+    kmph, kilometers-per-hour
+    kn, kt, knot, knots
+    mph, miles-per-hour
+    mps, meters-per-second †
+
+†  This is the default and will be used if no suffix is specified
+
+If most or all of the input values are in imperial units then the output will use imperial units as well.
+
+`)
+
+
+// ‡  This is the default if you set BALLISTIC_UNITS to imperial instead of metric
+// The environment variable BALLISTIC_UNITS can be defined as imperial or metric. If it is defined the output units will always be of that system. If BALLISTIC_UNITS is not defined and most or all of the input values are in imperial units then the output will use imperial units as well. Otherwise ballistic defaults to metric.
 
 	cli.VersionFlag = cli.BoolFlag{
 		Name: "version, V",

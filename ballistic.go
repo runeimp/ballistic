@@ -28,6 +28,7 @@ import (
 //
 // CONSTANTS
 //
+const APP_VERSION = "0.2.0"
 const ENERGY_FROM_JOULES_TO_FOOTPOUNDS = 0.737562
 const ENERGY_LABEL_FOOTPOUNDS = "foot-pounds"
 const ENERGY_LABEL_JOULES = "joules"
@@ -35,7 +36,7 @@ const ENERGY_LABEL_JOULES = "joules"
 const FORCE_FROM_KILOGRAMS_TO_NEWTONS float64 = 9.80665 // kg times meters per second squared
 const FORCE_LABEL_NEWTONS string = "newtons"
 const FORCE_LABEL_FOOTPOUNDS = "foot-pounds"
-const GRAVITY_MPS float64 = 9.80665 // kg times meters per second squared
+const GRAVITY_MPS float64 = 9.80665 // meters per second squared
 
 const MOMENTUM_LABEL_FPS = "foot-pound per second"
 const MOMENTUM_LABEL_MKS = "meter kilogram per second"
@@ -221,10 +222,23 @@ func buildOutputData(data BallisticData) {
 
 
 /** Calculate drop in flight */
-func calc_drop(distance, velocity float64) (drop float64) {
+func calcDropAtDistance(distance, velocity float64) (drop float64) {
 	flight_time := distance / velocity
 	drop = GRAVITY_MPS * 0.5 * (flight_time * flight_time)
 	return drop
+}
+
+func calcDistanceForDrop(drop, velocity float64) (distance float64) {
+	distance = drop * velocity
+	// G * 0.5 * Squared(distance / velocity) = drop
+	// 9.80665 * 0.5 = 4.903325 * Squared(distance / 500) = 1m
+	// 4.903325 / 1m = 4.903325
+
+	//  GRAVITY
+	//     Gm1m2
+	// F = ------
+	//       r2
+	return distance
 }
 
 
@@ -289,35 +303,35 @@ func calc_mpbr(data BallisticData) (mpbr ParsedData) {
 
 	for drop < diameter || drop == 0.0 {
 		distance += 1.0
-		drop = calc_drop(distance, velocity)
+		drop = calcDropAtDistance(distance, velocity)
 	}
 	for drop > diameter {
 		distance -= 0.1
-		drop = calc_drop(distance, velocity)
+		drop = calcDropAtDistance(distance, velocity)
 	}
 	for drop < diameter {
 		distance += 0.01
-		drop = calc_drop(distance, velocity)
+		drop = calcDropAtDistance(distance, velocity)
 	}
 	for drop > diameter {
 		distance -= 0.001
-		drop = calc_drop(distance, velocity)
+		drop = calcDropAtDistance(distance, velocity)
 	}
 	for drop < diameter {
 		distance += 0.0001
-		drop = calc_drop(distance, velocity)
+		drop = calcDropAtDistance(distance, velocity)
 	}
 	for drop > diameter {
 		distance -= 0.00001
-		drop = calc_drop(distance, velocity)
+		drop = calcDropAtDistance(distance, velocity)
 	}
 	for drop < diameter {
 		distance += 0.000001
-		drop = calc_drop(distance, velocity)
+		drop = calcDropAtDistance(distance, velocity)
 	}
 	for drop > diameter {
 		distance -= 0.0000001
-		drop = calc_drop(distance, velocity)
+		drop = calcDropAtDistance(distance, velocity)
 	}
 
 	mpbr.value = distance
@@ -673,7 +687,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "Ballistic"
 	app.Usage = "Calculates what it can based on provided input."
-	app.Version = "0.1.0"
+	app.Version = APP_VERSION
 
 	app.Flags = []cli.Flag {
 		cli.BoolFlag{
@@ -724,12 +738,74 @@ func main() {
 
 	cli.HelpFlag = cli.BoolFlag{
 		Name: "help, h",
-		Usage: "Print this help info",
+		Usage: "Output this help info",
 	}
+
+	cli.AppHelpTemplate = fmt.Sprintf(`
+NAME:
+   {{.Name}}{{if .Usage}} - {{.Usage}}{{end}}
+
+USAGE:
+   {{if .UsageText}}{{.UsageText}}{{else}}{{.HelpName}} {{if .VisibleFlags}}[global options]{{end}}{{end}}{{if .Version}}{{if not .HideVersion}}
+
+VERSION:
+   {{.Version}}{{end}}{{end}}{{if .Description}}
+
+DESCRIPTION:
+   {{.Description}}{{end}}{{if len .Authors}}
+
+AUTHOR{{with $length := len .Authors}}{{if ne 1 $length}}S{{end}}{{end}}:
+   {{range $index, $author := .Authors}}{{if $index}}
+   {{end}}{{$author}}{{end}}{{end}}{{if .VisibleCommands}}
+
+GLOBAL OPTIONS:
+   {{range $index, $option := .VisibleFlags}}{{if $index}}
+   {{end}}{{$option}}{{end}}{{end}}{{if .Copyright}}
+
+COPYRIGHT:
+   {{.Copyright}}{{end}}
+
+VALUE SUFFIXES:
+  All input values may be suffixed to allow for broader input selection.
+
+  LENGTH
+    c, cm, centi, centimeter, centimeters
+    f, ft, foot, feet
+    i, in, inch, inches
+    k, km, kilo, kilometer, kilometers
+    m, meters †
+    M, NM, Nm, nm, nmi  (Nautical Miles)
+    mm, milli, millimeter, millimeters
+    y, yd, yrd, yard, yards
+  MASS
+    #, lb, lbs, pound, pounds
+    g, gram, grams
+    gr, grain, grains
+    kg, kilo, kilogram, kilograms †
+    lt, long-ton
+    mt, tonne, metric-tonne
+    st, stone
+    t, ton, short-ton
+  VELOCITY
+    fps, feet-per-second
+    kmph, kilometers-per-hour
+    kn, kt, knot, knots
+    mph, miles-per-hour
+    mps, meters-per-second †
+
+†  This is the default and will be used if no suffix is specified
+
+If most or all of the input values are in imperial units then the output will use imperial units as well.
+
+`)
+
+
+// ‡  This is the default if you set BALLISTIC_UNITS to imperial instead of metric
+// The environment variable BALLISTIC_UNITS can be defined as imperial or metric. If it is defined the output units will always be of that system. If BALLISTIC_UNITS is not defined and most or all of the input values are in imperial units then the output will use imperial units as well. Otherwise ballistic defaults to metric.
 
 	cli.VersionFlag = cli.BoolFlag{
 		Name: "version, V",
-		Usage: "Print the ballistic version",
+		Usage: "Output the ballistic app version",
 	}
 
 	// app.HideHelp = true
@@ -788,19 +864,25 @@ func main() {
 			// fmt.Println("")
 		}
 
-		if len(c.String("draw-length")) == 0 {
-			if len(c.String("draw-weight")) == 0 {
-				if len(c.String("velocity")) == 0 {
-					if len(c.String("mass")) == 0 {
-						if len(c.String("radius")) == 0 {
-							fmt.Println("HELP")
-							// ShowAppHelp(c)
-							c.printHelp()
-						}
-					}
+
+		flags_set := 0
+		for _, flag_name := range c.GlobalFlagNames() {
+			// fmt.Printf("Flag: %s\n", flag_name)
+			flag_value := c.String(flag_name)
+			if len(flag_value) > 0 {
+				if flag_value != "false" && flag_value != "true" {
+					// fmt.Printf("Flag Set: %s\n", flag_value)
+					flags_set += 1
 				}
 			}
 		}
+		// fmt.Printf("Flags Set: %d\n", flags_set)
+
+		if flags_set == 0 {
+			// fmt.Println("No Args!")
+			cli.ShowAppHelpAndExit(c, 0)
+		}
+
 
 		if len(c.String("draw-length")) > 0 {
 			data.draw_length = parse_value(c.String("draw-length"), VALUE_TYPE_LENGTH)
@@ -825,9 +907,11 @@ func main() {
 
 		if len(c.String("radius")) > 0 {
 			data.target_radius = parse_value(c.String("radius"), VALUE_TYPE_LENGTH)
-			if data.projectile_velocity.value > 0 {
-				data.mpbr = calc_mpbr(data)
-			}
+		} else {
+			data.target_radius = parse_value("225mm", VALUE_TYPE_LENGTH)
+		}
+		if data.projectile_velocity.value > 0 {
+			data.mpbr = calc_mpbr(data)
 		}
 
 		buildOutputData(data)

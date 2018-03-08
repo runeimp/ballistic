@@ -5,6 +5,7 @@ package main
 // IMPORTS
 //
 import (
+	// "github.com/runeimp/ballistic/constants"
 	"encoding/json"
 	// "errors"
 	"fmt"
@@ -28,7 +29,7 @@ import (
 //
 // CONSTANTS
 //
-const APP_VERSION = "0.2.0"
+const APP_VERSION = "0.2.1"
 const ENERGY_FROM_JOULES_TO_FOOTPOUNDS = 0.737562
 const ENERGY_LABEL_FOOTPOUNDS = "foot-pounds"
 const ENERGY_LABEL_JOULES = "joules"

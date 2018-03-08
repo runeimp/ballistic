@@ -1,4 +1,4 @@
-Ballistic v0.2.0
+Ballistic v0.2.1
 ================
 
 Command line ballistics calculator
@@ -19,6 +19,44 @@ Features
 
 Usage
 -----
+
+### Typical Gun Ballistics
+
+```text
+$ ballistic -m 300gr -v 800fps
+
+  Projectile Velocity:   800.000026 feet per second
+    Projectile Energy:  1155.842841 joules
+  Projectile Momentum:     4.740169 meter kilogram per second
+Max Point Blank Range:   242.354405 feet
+
+```
+
+### Archery or Mechanical Ballistics with JSON output (pretty printed)
+
+```text
+$ ballistic --mass 42g --draw-weight 80lb --draw-length 0.72m --json --pretty
+{
+    "energy": {
+        "label": "joules",
+        "value": 128.10867801984
+    },
+    "momentum": {
+        "label": "meter kilogram per second",
+        "value": 2.319604379378794
+    },
+    "mpbr": {
+        "label": "meters",
+        "value": 16.731140499999988
+    },
+    "velocity": {
+        "label": "meters per second",
+        "value": 55.22867569949509
+    }
+}
+```
+
+### Help Info
 
 ```text
 $ ballistic

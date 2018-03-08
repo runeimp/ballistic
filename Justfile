@@ -159,6 +159,7 @@ distro:
 		echo
 		cp "$binpath" "${distpath}/"
 		cp "README.md" "${distpath}/"
+		cp "LICENSE" "${distpath}/"
 		just _list-dir ${distpath}
 		just _dirzip "$distpath"
 		echo
@@ -178,6 +179,12 @@ _dirzip path:
 	# echo "dirzip parent: ${parent}"
 	cd "${parent}"
 	ditto -ck --keepParent --zlibCompressionLevel 9 --norsrc --noqtn --nohfsCompression "${child}" "${child}.zip"
+
+
+# Pull Go packages
+go-get:
+	go get
+
 
 # Just info
 @info:

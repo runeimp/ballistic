@@ -627,19 +627,15 @@ func main() {
 		LANG, lang_present := os.LookupEnv("LANG")
 		LC_CTYPE, lc_present := os.LookupEnv("LC_CTYPE")
 
-		var locale_str string = ""
+		var locale_str string = "US"
 		if lang_present {
 			locale_str = LANG
 		} else if lc_present {
 			locale_str = LC_CTYPE
 		}
 
-		if len(locale_str) > 0 {
-			locale_NumberFormatter = locale.NumberFormatter(locale_str)
-			// locale_NumberFormatter = locale.NumberFormatter("TESTONE")
-		} else {
-			locale_NumberFormatter = locale.NumberFormatter("US")
-		}
+		locale_NumberFormatter = locale.NumberFormatter(locale_str)
+		// locale_NumberFormatter = locale.NumberFormatter("TESTONE")
 		// locale_NumberFormatter(123456789.1234567)
 
 		if output_json {

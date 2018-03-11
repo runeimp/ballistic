@@ -11,7 +11,7 @@ BINARY_NAME = 'ballistic'
 
 # Build the app for the current OS/Architecture
 @build-app:
-	just _term-wipe
+	just term-wipe
 	just _build-app
 	
 _build-app:
@@ -52,12 +52,14 @@ _build-arm binpath='raspberry-pi' goarm='5' goos='linux' ext='':
 
 # Build the Linux (32-bit) binary
 build-linux-32bit:
+	term-wipe
 	@echo "Building Linux (386) binary..."
 	@# GOOS=linux GOARCH=386 go build -o bin/linux-386/ballistic ballistic.go
 	@just _build linux-386 linux 386
 
 # Build the Linux (64-bit) binary
 @build-linux:
+	term-wipe
 	echo "Building Linux (64-bit) binary..."
 	# GOOS=linux GOARCH=amd64 go build -o bin/linux-amd64/ballistic ballistic.go
 	just _build-linux
@@ -74,6 +76,7 @@ build-linux-arm7:
 
 # Build the macOS (64-bit) binary
 @build-macos:
+	term-wipe
 	echo "Building macOS (64-bit) binary..."
 	just _build-macos
 
@@ -83,10 +86,11 @@ build-linux-arm7:
 
 # Build most OS/Architecture binarys
 @build-most:
+	term-wipe
 	just _build-most
 
 @_build-most:
-	just _term-wipe
+	just term-wipe
 	just _build-linux
 	just _build-macos
 	just _build-win32
@@ -125,6 +129,15 @@ build-pi:
 	just _build windows windows amd64 '.exe'
 
 
+# Clean, Build, Distro
+@cbd +args='':
+	term-wipe
+	# just clean
+	just _build-app
+	echo
+	just distro
+
+
 # Clean, Build, Run
 @cbr +args='':
 	term-wipe
@@ -145,7 +158,7 @@ build-pi:
 # Setup distrobutions
 distro:
 	#!/usr/bin/env sh
-	just _term-wipe
+	just term-wipe
 	rm -rf ./distro
 	for binpath in ./bin/*/ballistic*; do
 		pathname=`dirname "$binpath"`
@@ -181,17 +194,24 @@ _dirzip path:
 	ditto -ck --keepParent --zlibCompressionLevel 9 --norsrc --noqtn --nohfsCompression "${child}" "${child}.zip"
 
 
+# Justfile Environment Variables
+@env:
+	term-wipe
+	echo "  Justfile Environment Variables:"
+	env | sort
+
+
 # Pull Go packages
-go-get:
-	go get
+go-get +args='':
+	go get {{args}}
 
 
 # Just info
 @info:
 	term-wipe
 	echo "os_family(): {{os_family()}}"
-	echo "os(): {{os()}}"
-	echo "arch(): {{arch()}}"
+	echo "       os(): {{os()}}"
+	echo "     arch(): {{arch()}}"
 
 
 _list-bin:
@@ -212,27 +232,50 @@ _list-dir path='.':
 		ls -Alh --color "{{path}}"
 	fi
 
+
 # Run the app
 run +args='':
-	@just _term-wipe
+	@just term-wipe
 	@just _run {{args}}
 
 @_run +args='':
 	# BALLISTIC_WEIGHT=grams bin/{{os()}}/ballistic
 	# bin/{{os()}}/ballistic
-	echo ballistic {{args}}
+	echo "$ ballistic {{args}}"
 	go run ballistic.go {{args}}
 
 
 # Run time tests with timeit
 speed:
-	@just _term-wipe
+	@just term-wipe
 	timeit ./ballistic RuneImp "./ballistic RuneImp 'Command Line'"
 
 
 # Terminal Helper
 term +args='wipe':
-	@just _term-{{args}}
+	#!/usr/bin/env sh
+	if [ '{{args}}' = 'wipe' ]; then
+		just term-{{args}}
+	else
+		just _term-{{args}}
+	fi
+
+# Helper recipe to clear the screen and put a break between the last output and this
+_term-clear message='--CLEAR--' string='=':
+	#!/usr/bin/env sh
+	msg='{{message}}'
+	columns=$(tput cols)
+	msg_mid=$((${#msg} / 2))
+	col_mid=$(($columns / 2))
+	row_mid=$(($col_mid - $msg_mid))
+	line_break=""
+	while [ ${#line_break} -lt $columns ]; do
+		line_break="${line_break}{{string}}"
+	done
+	echo "$line_break"
+	printf "\n\n\n\n\n%*s\n\n\n\n\n\n" $row_mid '{{message}}' 2>/dev/null
+	echo "$line_break"
+	clear
 
 # Helper recipe to change the terminal label
 _term-label label:
@@ -245,28 +288,37 @@ _term-le label:
 
 # Helper recipe to echo, and wipe the buffer
 _term-we label:
-	@just _term-wipe
+	@just term-wipe
 	@echo "{{label}}"
 
 # Helper recipe to change the terminal label, echo, and wipe the buffer
 _term-lwe label:
 	@just _term-label "{{label}}"
-	@just _term-wipe
+	@just term-wipe
 	@echo "{{label}}"
 
 # Helper recipe to change the terminal label and wipe the buffer
 _term-lw label:
 	@just _term-label "{{label}}"
-	@just _term-wipe
+	@just term-wipe
 
 # Helper recipe to wipe the terminal buffer
+term-wipe:
+	#!/usr/bin/env sh
+	if [ '{{os()}}' = 'macos' ]; then
+		just _term-wipe
+	else
+		just _term-clear
+	fi
+
 _term-wipe:
-	@test -x "`which term-wipe 2>/dev/null`" && term-wipe || clear
+	#!/usr/bin/osascript
+	tell application "System Events" to keystroke "k" using command down
 
 
 # Test all examples
 test:
-	@just _term-wipe
+	@just term-wipe
 	@echo
 	./ballistic 'Command Line'
 	@echo
@@ -274,6 +326,6 @@ test:
 
 # Prints the compiler or interpreter version(s)
 ver:
-	@just _term-wipe
+	@just term-wipe
 	@go version
 

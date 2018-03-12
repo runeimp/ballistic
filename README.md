@@ -1,4 +1,4 @@
-Ballistic v0.4.0
+Ballistic v0.4.1
 ================
 
 Command line ballistics calculator

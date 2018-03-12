@@ -13,7 +13,7 @@ package locale
 //
 import (
  	// "fmt"
- 	"log"
+ 	// "log"
 	"regexp"
 	"strconv"
 	"strings"

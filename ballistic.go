@@ -52,8 +52,9 @@ type BallisticData struct {
 
 
 type LabeledValue struct {
-	Label string  `json:"label,omitempty"`
-	Value float64 `json:"value,omitempty"`
+	Label string       `json:"label,omitempty"`
+	ValueFloat float64 `json:"value,omitempty"`
+	ValueString string `json:"value,omitempty"`
 }
 
 // func (t LabeledValue) MarshalJSON() ([]byte, error) {
@@ -74,6 +75,7 @@ type OutputData struct {
 //
 var data BallisticData
 var decimal_places int = 6
+var locale_str string
 var output OutputData
 var output_debug bool = false
 var output_indent string = "    "
@@ -101,11 +103,11 @@ func buildOutputData(data BallisticData) {
 		if data.projectile_velocity.Value > 0 {
 			fmt.Printf("  Projectile Velocity: %16.6f %s\n", data.projectile_velocity.Value, data.projectile_velocity.Label)
 		}
-		if output.Energy.Value > 0 {
-			fmt.Printf("    Projectile Energy: %16.6f %s\n", output.Energy.Value, output.Energy.Label)
+		if output.Energy.ValueFloat > 0 {
+			fmt.Printf("    Projectile Energy: %16.6f %s\n", output.Energy.ValueFloat, output.Energy.Label)
 		}
-		if output.Momentum.Value > 0 {
-			fmt.Printf("  Projectile Momentum: %16.6f %s\n", output.Momentum.Value, output.Momentum.Label)
+		if output.Momentum.ValueFloat > 0 {
+			fmt.Printf("  Projectile Momentum: %16.6f %s\n", output.Momentum.ValueFloat, output.Momentum.Label)
 		}
 		if data.mpbr.Value > 0 {
 			fmt.Printf("Max Point Blank Range: %16.6f %s\n", data.mpbr.Value, data.mpbr.Label)
@@ -114,17 +116,17 @@ func buildOutputData(data BallisticData) {
 	}
 
 	if InputData.Metric == false {
-		output.Energy.Value *= ENERGY_FROM_JOULES_TO_FOOTPOUNDS
+		output.Energy.ValueFloat *= ENERGY_FROM_JOULES_TO_FOOTPOUNDS
 		output.Energy.Label = ENERGY_LABEL_FOOTPOUNDS
 
-		output.Momentum.Value *= MASS_FROM_KILOGRAMS_TO_POUNDS * VELOCITY_FROM_MPS_TO_FPS
+		output.Momentum.ValueFloat *= MASS_FROM_KILOGRAMS_TO_POUNDS * VELOCITY_FROM_MPS_TO_FPS
 		output.Momentum.Label = MOMENTUM_LABEL_FPS
 	}
 
 	if data.mpbr.Value > 0 {
 		if output_debug { fmt.Printf("MPBR %f %s\n", data.mpbr.Value, data.mpbr.Label) }
 		output.Mpbr = mpbr_to_mpbr(data)
-		if output_debug { fmt.Printf("MPBR %f %s\n", output.Mpbr.Value, output.Mpbr.Label) }
+		if output_debug { fmt.Printf("MPBR %f %s\n", output.Mpbr.ValueFloat, output.Mpbr.Label) }
 	}
 }
 
@@ -156,13 +158,13 @@ func calcEnergy(data BallisticData) (energy LabeledValue) {
 	mass_kg := data.projectile_mass.Value
 	velocity_mps := data.projectile_velocity.Value
 
-	energy.Value = mass_kg * velocity_mps * velocity_mps
+	energy.ValueFloat = mass_kg * velocity_mps * velocity_mps
 	energy.Label = ENERGY_LABEL_JOULES
 
 	if output_debug {
 		log.Printf("calcEnergy()   <| mass: %f kg", mass_kg)
 		log.Printf("calcEnergy()   <| velocity: %f mps", velocity_mps)
-		log.Printf("calcEnergy()    | energy: %f %s", energy.Value, energy.Label)
+		log.Printf("calcEnergy()    | energy: %f %s", energy.ValueFloat, energy.Label)
 	}
 
 	return energy
@@ -189,13 +191,13 @@ func calcMomentum(data BallisticData) (momentum LabeledValue) {
 	mass_kg := data.projectile_mass.Value
 	velocity_mps := data.projectile_velocity.Value
 
-	momentum.Value = mass_kg * velocity_mps
+	momentum.ValueFloat = mass_kg * velocity_mps
 	momentum.Label = MOMENTUM_LABEL_MKS
 
 	if output_debug {
 		log.Printf("calcMomentum() <| mass: %f kg", mass_kg)
 		log.Printf("calcMomentum() <| velocity: %f mps", velocity_mps)
-		log.Printf("calcMomentum()  | momentum: %f %s", momentum.Value, momentum.Label)
+		log.Printf("calcMomentum()  | momentum: %f %s", momentum.ValueFloat, momentum.Label)
 	}
 		
 	return momentum
@@ -295,16 +297,16 @@ func calcVelocity(data BallisticData) (projectile_velocity ParsedData) {
 func cleanupJSON(data OutputData) (data_obj map[string]interface{}) {
 	data_obj = make(map[string]interface{})
 
-	if data.Energy.Value != 0 {
+	if data.Energy.ValueFloat != 0 {
 		data_obj["energy"] = data.Energy
 	}
-	if data.Momentum.Value != 0 {
+	if data.Momentum.ValueFloat != 0 {
 		data_obj["momentum"] = data.Momentum
 	}
-	if data.Mpbr.Value != 0 {
+	if data.Mpbr.ValueFloat != 0 {
 		data_obj["mpbr"] = data.Mpbr
 	}
-	if data.Velocity.Value != 0 {
+	if data.Velocity.ValueFloat != 0 {
 		data_obj["velocity"] = data.Velocity
 	}
 
@@ -319,7 +321,7 @@ var locale_NumberFormatter func(number float64, scale int) string
 /** Convert MPBR in meters to input units */
 func mpbr_to_mpbr(data BallisticData) (mpbr LabeledValue) {
 	mpbr.Label = ""
-	mpbr.Value = 0.0
+	mpbr.ValueFloat = 0.0
 
 	user_label := data.projectile_velocity.UserLabel
 	if len(user_label) == 0 {
@@ -329,19 +331,19 @@ func mpbr_to_mpbr(data BallisticData) (mpbr LabeledValue) {
 	switch user_label {
 	case VELOCITY_LABEL_FPS:
 		mpbr.Label = LENGTH_LABEL_FOOT
-		mpbr.Value = data.mpbr.Value * LENGTH_FROM_METERS_TO_FEET
+		mpbr.ValueFloat = data.mpbr.Value * LENGTH_FROM_METERS_TO_FEET
 	case VELOCITY_LABEL_KMPH:
 		mpbr.Label = LENGTH_LABEL_KILOMETER
-		mpbr.Value = data.mpbr.Value * LENGTH_FROM_METERS_TO_KILOMETERS
+		mpbr.ValueFloat = data.mpbr.Value * LENGTH_FROM_METERS_TO_KILOMETERS
 	case VELOCITY_LABEL_KNOTS:
 		mpbr.Label = LENGTH_LABEL_NAUTICAL_MILE
-		mpbr.Value = data.mpbr.Value * LENGTH_FROM_METERS_TO_NAUTICAL_MILES
+		mpbr.ValueFloat = data.mpbr.Value * LENGTH_FROM_METERS_TO_NAUTICAL_MILES
 	case VELOCITY_LABEL_MPS:
 		mpbr.Label = LENGTH_LABEL_METER
-		mpbr.Value = data.mpbr.Value
+		mpbr.ValueFloat = data.mpbr.Value
 	case VELOCITY_LABEL_MPH:
 		mpbr.Label = LENGTH_LABEL_MILE
-		mpbr.Value = data.mpbr.Value * LENGTH_FROM_METERS_TO_MILES
+		mpbr.ValueFloat = data.mpbr.Value * LENGTH_FROM_METERS_TO_MILES
 	}
 
 	if output_debug {
@@ -357,23 +359,73 @@ func mpbr_to_mpbr(data BallisticData) (mpbr LabeledValue) {
 /** Print Human Readable Output */
 func outputHuman(data OutputData) {
 	fmt.Println("")
-	if data.Velocity.Value > 0 {
-		// fmt.Printf("  Projectile Velocity: %16.6f %s\n", data.Velocity.Value, data.Velocity.Label)
-		fmt.Printf("  Projectile Velocity: %20s %s\n", locale_NumberFormatter(data.Velocity.Value, decimal_places), data.Velocity.Label)
+
+	var energy_num_value string
+	var energy_num_width int
+	var max_width_int int
+	var momentum_num_value string
+	var momentum_num_width int
+	var mpbr_num_value string
+	var mpbr_num_width int
+	var velocity_num_value string
+	var velocity_num_width int
+
+	if data.Velocity.ValueFloat > 0 {
+		// fmt.Printf("  Projectile Velocity: %16.6f %s\n", data.Velocity.ValueFloat, data.Velocity.Label)
+		velocity_num_value = locale_NumberFormatter(data.Velocity.ValueFloat, decimal_places)
+		velocity_num_width = len(velocity_num_value)
 	}
-	if data.Energy.Value > 0 {
-		// fmt.Printf("    Projectile Energy: %16.6f %s\n", data.Energy.Value, data.Energy.Label)
-		// fmt.Printf("    Projectile Energy: %16s %s\n", numberFormat(data.Energy.Value), data.Energy.Label)
-		fmt.Printf("    Projectile Energy: %20s %s\n", locale_NumberFormatter(data.Energy.Value, decimal_places), data.Energy.Label)
+	if data.Energy.ValueFloat > 0 {
+		// fmt.Printf("    Projectile Energy: %16.6f %s\n", data.Energy.ValueFloat, data.Energy.Label)
+		// fmt.Printf("    Projectile Energy: %16s %s\n", numberFormat(data.Energy.ValueFloat), data.Energy.Label)
+		// fmt.Printf("    Projectile Energy: %20s %s\n", locale_NumberFormatter(data.Energy.ValueFloat, decimal_places), data.Energy.Label)
+		energy_num_value = locale_NumberFormatter(data.Energy.ValueFloat, decimal_places)
+		energy_num_width = len(energy_num_value)
 	}
-	if data.Momentum.Value > 0 {
-		// fmt.Printf("  Projectile Momentum: %16.6f %s\n", data.Momentum.Value, data.Momentum.Label)
-		fmt.Printf("  Projectile Momentum: %20s %s\n", locale_NumberFormatter(data.Momentum.Value, decimal_places), data.Momentum.Label)
+	if data.Momentum.ValueFloat > 0 {
+		// fmt.Printf("  Projectile Momentum: %16.6f %s\n", data.Momentum.ValueFloat, data.Momentum.Label)
+		// fmt.Printf("  Projectile Momentum: %20s %s\n", locale_NumberFormatter(data.Momentum.ValueFloat, decimal_places), data.Momentum.Label)
+		momentum_num_value = locale_NumberFormatter(data.Momentum.ValueFloat, decimal_places)
+		momentum_num_width = len(momentum_num_value)
 	}
-	if data.Mpbr.Value > 0 {
-		// fmt.Printf("Max Point Blank Range: %16.6f %s\n", data.Mpbr.Value, data.Mpbr.Label)
-		fmt.Printf("Max Point Blank Range: %20s %s\n", locale_NumberFormatter(data.Mpbr.Value, decimal_places), data.Mpbr.Label)
+	if data.Mpbr.ValueFloat > 0 {
+		// fmt.Printf("Max Point Blank Range: %16.6f %s\n", data.Mpbr.ValueFloat, data.Mpbr.Label)
+		// fmt.Printf("Max Point Blank Range: %20s %s\n", locale_NumberFormatter(data.Mpbr.ValueFloat, decimal_places), data.Mpbr.Label)
+		mpbr_num_value = locale_NumberFormatter(data.Mpbr.ValueFloat, decimal_places)
+		mpbr_num_width = len(mpbr_num_value)
 	}
+
+	if velocity_num_width > energy_num_width {
+		max_width_int = velocity_num_width
+	} else {
+		max_width_int = energy_num_width
+	}
+	if momentum_num_width > max_width_int {
+		max_width_int = momentum_num_width
+	}
+	if mpbr_num_width > max_width_int {
+		max_width_int = mpbr_num_width
+	}
+	max_width_str := fmt.Sprintf("%d", max_width_int)
+
+
+	if velocity_num_width > 0 {
+		msg_format := "  Projectile Velocity: %" + max_width_str + "s %s\n"
+		fmt.Printf(msg_format, velocity_num_value, data.Velocity.Label)
+	}
+	if energy_num_width > 0 {
+		msg_format := "    Projectile Energy: %" + max_width_str + "s %s\n"
+		fmt.Printf(msg_format, energy_num_value, data.Energy.Label)
+	}
+	if momentum_num_width > 0 {
+		msg_format := "  Projectile Momentum: %" + max_width_str + "s %s\n"
+		fmt.Printf(msg_format, momentum_num_value, data.Momentum.Label)
+	}
+	if mpbr_num_width > 0 {
+		msg_format := "Max Point Blank Range: %" + max_width_str + "s %s\n"
+		fmt.Printf(msg_format, mpbr_num_value, data.Mpbr.Label)
+	}
+	
 	fmt.Println("")
 }
 
@@ -389,7 +441,7 @@ func outputHuman(data OutputData) {
 func outputJSON(data OutputData) {
 	if output_debug {
 		fmt.Println("JSON data!")
-		fmt.Printf("data.Energy: %f %s\n", data.Energy.Value, data.Energy.Label)
+		fmt.Printf("data.Energy: %f %s\n", data.Energy.ValueFloat, data.Energy.Label)
 	}
 	var err error
 	var json_data []byte
@@ -438,19 +490,19 @@ func velocity_to_velocity(data BallisticData) (velocity LabeledValue) {
 	switch user_label {
 	case VELOCITY_LABEL_FPS:
 		velocity.Label = user_label
-		velocity.Value = data.projectile_velocity.Value * VELOCITY_FROM_MPS_TO_FPS
+		velocity.ValueFloat = data.projectile_velocity.Value * VELOCITY_FROM_MPS_TO_FPS
 	case VELOCITY_LABEL_KMPH:
 		velocity.Label = user_label
-		velocity.Value = data.projectile_velocity.Value * VELOCITY_FROM_MPS_TO_KMPH
+		velocity.ValueFloat = data.projectile_velocity.Value * VELOCITY_FROM_MPS_TO_KMPH
 	case VELOCITY_LABEL_KNOTS:
 		velocity.Label = user_label
-		velocity.Value = data.projectile_velocity.Value * VELOCITY_FROM_MPS_TO_KNOTS
+		velocity.ValueFloat = data.projectile_velocity.Value * VELOCITY_FROM_MPS_TO_KNOTS
 	case VELOCITY_LABEL_MPS:
 		velocity.Label = user_label
-		velocity.Value = data.projectile_velocity.Value
+		velocity.ValueFloat = data.projectile_velocity.Value
 	case VELOCITY_LABEL_MPH:
 		velocity.Label = user_label
-		velocity.Value = data.projectile_velocity.Value * VELOCITY_FROM_MPS_TO_MPH
+		velocity.ValueFloat = data.projectile_velocity.Value * VELOCITY_FROM_MPS_TO_MPH
 	}
 
 	// log.Printf("velocity_to_velocity() | user_label: '%s'", user_label)
@@ -458,7 +510,7 @@ func velocity_to_velocity(data BallisticData) (velocity LabeledValue) {
 	// log.Printf("velocity_to_velocity() | InputData | velocity: '%s' | mass: '%s' | metric: %t", InputData.Velocity, InputData.Mass, InputData.Metric)
 	// log.Printf("velocity_to_velocity() | projectile_velocity user value & label: %f %s", data.projectile_velocity.UserValue, data.projectile_velocity.UserLabel)
 	// log.Printf("velocity_to_velocity() | projectile_velocity norm value & label: %f %s", data.projectile_velocity.Value, data.projectile_velocity.Label)
-	// log.Printf("velocity_to_velocity() | projectile_velocity calc value & label: %f %s", velocity.Value, velocity.Label)
+	// log.Printf("velocity_to_velocity() | projectile_velocity calc value & label: %f %s", velocity.ValueFloat, velocity.Label)
 
 	return velocity
 }
@@ -495,6 +547,12 @@ func main() {
 		cli.BoolFlag{
 			Name: "json, j",
 			Usage: "Output JSON data",
+		},
+		cli.StringFlag{
+			Name: "locale",
+			Value: "en_US",
+			Usage: "The `LOCALE` to format number output for.",
+			EnvVar: "LC_CTYPE,LANG",
 		},
 		cli.StringFlag{
 			Name: "projectile, mass, m",
@@ -548,6 +606,7 @@ func main() {
 		output_json = c.Bool("json")
 		output_pretty = c.Bool("pretty-print")
 		decimal_places = c.Int("precision")
+		locale_str = c.String("locale")
 
 		// output_pretty = c.Bool("pretty")
 		// if len(c.String("pretty-print")) > 0 {
@@ -561,12 +620,13 @@ func main() {
 
 		if output_debug {
 			fmt.Println("Going Ballistic!")
-			log.Printf("        draw length: %9s (%d)", c.String("draw-length"), len(c.String("draw-length")))
-			log.Printf("        draw weight: %9s (%d)", c.String("draw-weight"), len(c.String("draw-weight")))
-			log.Printf("      target radius: %9s (%d)", c.String("radius"), len(c.String("radius")))
-			log.Printf("projectile velocity: %9s (%d)", c.String("velocity"), len(c.String("velocity")))
-			log.Printf("    projectile mass: %9s (%d)", c.String("projectile"), len(c.String("projectile")))
-			log.Printf("          precision: %9s (%d)", c.String("precision"), len(c.String("precision")))
+			log.Printf("             locale: %12s (%d)", locale_str, len(locale_str))
+			log.Printf("        draw length: %12s (%d)", c.String("draw-length"), len(c.String("draw-length")))
+			log.Printf("        draw weight: %12s (%d)", c.String("draw-weight"), len(c.String("draw-weight")))
+			log.Printf("      target radius: %12s (%d)", c.String("radius"), len(c.String("radius")))
+			log.Printf("projectile velocity: %12s (%d)", c.String("velocity"), len(c.String("velocity")))
+			log.Printf("    projectile mass: %12s (%d)", c.String("projectile"), len(c.String("projectile")))
+			log.Printf("          precision: %12s (%d)", c.String("precision"), len(c.String("precision")))
 			// log.Println("")
 			// fmt.Println("")
 		}
@@ -576,7 +636,7 @@ func main() {
 		for _, flag_name := range c.GlobalFlagNames() {
 			// fmt.Printf("Flag: %s\n", flag_name)
 			switch flag_name {
-			case "precision", "radius":
+			case "locale", "precision", "radius":
 			default:
 				flag_value := c.String(flag_name)
 				if len(flag_value) > 0 {
@@ -623,16 +683,6 @@ func main() {
 		}
 
 		buildOutputData(data)
-
-		LANG, lang_present := os.LookupEnv("LANG")
-		LC_CTYPE, lc_present := os.LookupEnv("LC_CTYPE")
-
-		var locale_str string = "US"
-		if lang_present {
-			locale_str = LANG
-		} else if lc_present {
-			locale_str = LC_CTYPE
-		}
 
 		locale_NumberFormatter = locale.NumberFormatter(locale_str)
 		// locale_NumberFormatter = locale.NumberFormatter("TESTONE")

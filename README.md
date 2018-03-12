@@ -1,4 +1,4 @@
-Ballistic v0.4.1
+Ballistic v0.4.2
 ================
 
 Command line ballistics calculator
@@ -23,14 +23,24 @@ Usage
 ### Typical Gun Ballistics
 
 ```text
-$ ballistic -m 300gr -v 800fps -f 4
+$ ballistic -m 123gr -v 50000fps
 
-  Projectile Velocity:             800.0000 feet per second
-    Projectile Energy:           1,155.8428 joules
-  Projectile Momentum:               4.7402 meter kilogram per second
-Max Point Blank Range:             242.3544 feet
+  Projectile Velocity:    50,000.001600 feet per second
+    Projectile Energy: 1,851,154.550587 joules
+  Projectile Momentum:       121.466834 meter kilogram per second
+Max Point Blank Range:    15,147.150313 feet
+
+$ ballistic -m 123gr -v 50000fps --locale IN
+
+  Projectile Velocity:    50,000.001600 feet per second
+    Projectile Energy: 18,51,154.550587 joules
+  Projectile Momentum:       121.466834 meter kilogram per second
+Max Point Blank Range:    15,147.150313 feet
 
 ```
+
+Note that the first run defaults to my locale of `en_US.UTF-8`. If a locale is not found or supported (yet) the default is `en_US`.
+
 
 ### Archery or Mechanical Ballistics with JSON output (pretty printed)
 
@@ -68,19 +78,21 @@ USAGE:
    ballistic [global options]
 
 VERSION:
-   0.2.0
+   0.4.2
 
 GLOBAL OPTIONS:
-   --debug, -d                                       Output debug info
-   --draw-length LENGTH, --length LENGTH, -l LENGTH  Bow or sling shot draw LENGTH. Used to calculate projectile velocity, energy, etc.
-   --draw-weight WEIGHT, --weight WEIGHT, -w WEIGHT  Bow or sling shot draw WEIGHT. Used to calculate projectile velocity, energy, etc.
-   --json, -j                                        Output JSON data
-   --mass MASS, -m MASS                              Projectile MASS (weight). Used to calculate projectile velocity, energy, etc.
-   --pretty-print, --pretty, -p                      Pretty printed JSON output
-   --radius RADIUS, -r RADIUS                        The RADIUS of the target area. Used to calculate MPBR (Maximum Point Blank Range).
-   --velocity VELOCITY, -v VELOCITY                  The projectile VELOCITY (speed). Used to calculate projectile energy, momentum, etc.
-   --help, -h                                        Print this help info
-   --version, -V                                     Print the ballistic version
+   --debug, -d                                             Output debug info
+   --draw-length LENGTH, --length LENGTH, -l LENGTH        Bow or sling shot draw LENGTH. Used to calculate projectile velocity, energy, etc.
+   --draw-weight WEIGHT, --weight WEIGHT, -w WEIGHT        Bow or sling shot draw WEIGHT. Used to calculate projectile velocity, energy, etc.
+   --json, -j                                              Output JSON data
+   --locale LOCALE, --local LOCALE                         The LOCALE to format number output for. (default: "en_US") [$LC_CTYPE, $LANG]
+   --precision PRECISION, --float PRECISION, -f PRECISION  The output floating point PRECISION (numbers after decimal mark). (default: "6")
+   --pretty-print, --pretty, -p                            Pretty printed JSON output
+   --projectile MASS, --mass MASS, -m MASS                 Projectile MASS (weight). Used to calculate projectile velocity, energy, etc.
+   --radius RADIUS, -r RADIUS                              The RADIUS of the target area. Used to calculate MPBR (Maximum Point Blank Range). (default: "225mm")
+   --velocity VELOCITY, -v VELOCITY                        The projectile VELOCITY (speed). Used to calculate projectile energy, momentum, etc.
+   --help, -h                                              Output this help info
+   --version, -V                                           Output the ballistic app version
 
 VALUE SUFFIXES:
   All input values may be suffixed to allow for broader input selection.
@@ -113,6 +125,7 @@ VALUE SUFFIXES:
 †  This is the default and will be used if no suffix is specified
 
 If most or all of the input values are in imperial units then the output will use imperial units as well.
+
 ```
 
 

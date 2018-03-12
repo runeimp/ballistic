@@ -33,7 +33,7 @@ import (
 //
 // CONSTANTS
 //
-const APP_VERSION = "0.3.0"
+const APP_VERSION = "0.4.2"
 
 
 //
@@ -551,7 +551,7 @@ func main() {
 			Usage: "Output JSON data",
 		},
 		cli.StringFlag{
-			Name: "locale",
+			Name: "locale, local",
 			Value: "en_US",
 			Usage: "The `LOCALE` to format number output for.",
 			EnvVar: "LC_CTYPE,LANG",

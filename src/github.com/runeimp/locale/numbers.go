@@ -19,6 +19,28 @@ import (
 	"strings"
 )
 
+
+//
+// TYPES
+//
+type CountryCodesAndNumbers struct {
+	CountryNames []string
+	CountryAlpha2 string
+	CountryAlpha3 string
+	Adjective string
+	SingularNoun string
+	PluralNoun string
+	Number_Separatrix string
+	Decimal_Grouping []int
+	Decimal_GroupDelimiters []string
+	Fractional_Grouping []int
+	Fractional_GroupDelimiters []string
+}
+
+
+//
+// CONSTANTS
+//
 const SEPARATRIX_APOSTROPHE = "'"
 const SEPARATRIX_BULLET = "•"
 const SEPARATRIX_COMMA = ","
@@ -35,54 +57,55 @@ const SEPARATRIX_VBAR = "|"
  * @see [Indian Numbering System]: https://en.wikipedia.org/wiki/Indian_numbering_system
  * @see [SI]: https://en.wikipedia.org/wiki/International_System_of_Units
  */
-const COUNTRY_CA_NUMBER_FORMAT_STD = "### ### ###,###"   // Canada
-const COUNTRY_DE_NUMBER_FORMAT_STD = "### ###.###,###"   // Germany
-const COUNTRY_DK_NUMBER_FORMAT_STD = "### ### ###,###"   // Denmark
-const COUNTRY_ES_NUMBER_FORMAT_STD = "###.###.###,###"   // Spain
-const COUNTRY_FI_NUMBER_FORMAT_STD = "### ### ###,###"   // Finland
-const COUNTRY_FR_NUMBER_FORMAT_STD = "### ### ###,###"   // France
-const COUNTRY_GB_NUMBER_FORMAT_OLD = "###?###?###|###"   // Great Britain. Old standard.
-const COUNTRY_GB_NUMBER_FORMAT_STD = "###,###,###.###"   // Great Britain
-const COUNTRY_IN_NUMBER_FORMAT_STD = "##,##,###.###"     // Italy
-const COUNTRY_IT_NUMBER_FORMAT_STD = "###.###.###,###"   // Italy
-const COUNTRY_MX_NUMBER_FORMAT_ALT = "###;###,###.###"   // Mexico Alternate
-const COUNTRY_MX_NUMBER_FORMAT_STD = "###'###,###.###"   // Mexico
-const COUNTRY_NO_NUMBER_FORMAT_STD = "###.###.###,###"   // Norway
-const COUNTRY_SE_NUMBER_FORMAT_STD = "###.###.###,###"   // Sweden
-const COUNTRY_TH_NUMBER_FORMAT_STD = "###,###,###.###"   // Thailand
-const COUNTRY_UK_NUMBER_FORMAT_OLD = "###?###?###|###"   // United Kingdom (Great Britain). Old standard.
-const COUNTRY_UK_NUMBER_FORMAT_STD = "###,###,###.###"   // United Kingdom (Great Britain)
-const COUNTRY_US_NUMBER_FORMAT_STD = "###,###,###.###"   // United States
-const COUNTRY_ZA_NUMBER_FORMAT_STD = "### ### ###,###"   // South Africa
+const COUNTRY_CA_NUMBER_FORMAT_STD = "### ### ###(,)###"   // Canada
+const COUNTRY_DE_NUMBER_FORMAT_STD = "### ###.###(,)###"   // Germany
+const COUNTRY_DK_NUMBER_FORMAT_STD = "### ### ###(,)###"   // Denmark
+const COUNTRY_ES_NUMBER_FORMAT_STD = "###.###.###(,)###"   // Spain
+const COUNTRY_FI_NUMBER_FORMAT_STD = "### ### ###(,)###"   // Finland
+const COUNTRY_FR_NUMBER_FORMAT_STD = "### ### ###(,)###"   // France
+const COUNTRY_GB_NUMBER_FORMAT_OLD = "###?###?###(|)###"   // Great Britain. Old standard.
+const COUNTRY_GB_NUMBER_FORMAT_STD = "###,###,###(.)###"   // Great Britain
+const COUNTRY_IN_NUMBER_FORMAT_STD = "##,##,###(.)###"     // Italy
+const COUNTRY_IT_NUMBER_FORMAT_STD = "###.###.###(,)###"   // Italy
+const COUNTRY_MX_NUMBER_FORMAT_ALT = "###;###,###(.)###"   // Mexico Alternate
+const COUNTRY_MX_NUMBER_FORMAT_STD = "###'###,###(.)###"   // Mexico
+const COUNTRY_NO_NUMBER_FORMAT_STD = "###.###.###(,)###"   // Norway
+const COUNTRY_SE_NUMBER_FORMAT_STD = "###.###.###(,)###"   // Sweden
+const COUNTRY_TH_NUMBER_FORMAT_STD = "###,###,###(.)###"   // Thailand
+const COUNTRY_UK_NUMBER_FORMAT_OLD = "###?###?###(|)###"   // United Kingdom (Great Britain). Old standard.
+const COUNTRY_UK_NUMBER_FORMAT_STD = "###,###,###(.)###"   // United Kingdom (Great Britain)
+const COUNTRY_US_NUMBER_FORMAT_STD = "###,###,###(.)###"   // United States
+const COUNTRY_ZA_NUMBER_FORMAT_STD = "### ### ###(,)###"   // South Africa
 
-const LANG_DE_NUMBER_FORMAT = "### ###.###,###"   // German
-const LANG_DK_NUMBER_FORMAT = "### ### ###,###"   // Danish
-const LANG_EN_NUMBER_FORMAT_CA = "### ### ###,###"   // Canadian English
-const LANG_EN_NUMBER_FORMAT_GB = "###,###,###.###"   // British English
-const LANG_EN_NUMBER_FORMAT_UK = "###,###,###.###"   // British English
-const LANG_EN_NUMBER_FORMAT_US = "###,###,###.###"   // American English
-const LANG_EO_NUMBER_FORMAT = "###?###?###,###"   // Esperanto
-const LANG_ES_NUMBER_FORMAT_ES_STD = "###.###.###,###"   // Spanish
-const LANG_ES_NUMBER_FORMAT_MX_ALT = "###;###,###.###"   // Spanish
-const LANG_ES_NUMBER_FORMAT_MX_STD = "###'###,###.###"   // Spanish
-const LANG_FI_NUMBER_FORMAT = "### ### ###,###"   // Finnish
-const LANG_FR_NUMBER_FORMAT = "### ### ###,###"   // French
-const LANG_IO_NUMBER_FORMAT = "###.###.###,###"   // Ido
-const LANG_IT_NUMBER_FORMAT = "###.###.###,###"   // Italian
-const LANG_NO_NUMBER_FORMAT = "###.###.###,###"   // Norwegian
-const LANG_SE_NUMBER_FORMAT = "###.###.###,###"   // Swedish
-const LANG_TH_NUMBER_FORMAT = "###,###,###.###"   // Thai
+const LANG_DE_NUMBER_FORMAT = "### ###.###(,)###"          // German
+const LANG_DK_NUMBER_FORMAT = "### ### ###(,)###"          // Danish
+const LANG_EN_NUMBER_FORMAT_CA = "### ### ###(,)###"       // Canadian English
+const LANG_EN_NUMBER_FORMAT_GB = "###,###,###(.)###"       // British English
+const LANG_EN_NUMBER_FORMAT_UK = "###,###,###(.)###"       // British English
+const LANG_EN_NUMBER_FORMAT_US = "###,###,###(.)###"       // American English
+const LANG_EO_NUMBER_FORMAT = "###?###?###(,)###"          // Esperanto
+const LANG_ES_NUMBER_FORMAT_ES_STD = "###.###.###(,)###"   // Spanish
+const LANG_ES_NUMBER_FORMAT_MX_ALT = "###;###,###(.)###"   // Spanish
+const LANG_ES_NUMBER_FORMAT_MX_STD = "###'###,###(.)###"   // Spanish
+const LANG_FI_NUMBER_FORMAT = "### ### ###(,)###"          // Finnish
+const LANG_FR_NUMBER_FORMAT = "### ### ###(,)###"          // French
+const LANG_IO_NUMBER_FORMAT = "###.###.###(,)###"          // Ido
+const LANG_IT_NUMBER_FORMAT = "###.###.###(,)###"          // Italian
+const LANG_NO_NUMBER_FORMAT = "###.###.###(,)###"          // Norwegian
+const LANG_SE_NUMBER_FORMAT = "###.###.###(,)###"          // Swedish
+const LANG_TH_NUMBER_FORMAT = "###,###,###(.)###"          // Thai
 
-
+// COUNTRY_{ISO 3166-1 alpha-2 code}_NUMBER_SEPARATRIX
 const COUNTRY_AU_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Australia
 const COUNTRY_BD_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Bangladesh
-const COUNTRY_BN_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Brunei Darussalam, CN: Brunei
-const COUNTRY_BOT_NUMBER_SEPARATRIX = SEPARATRIX_POINT        // BOT (British Overseas Territories), AKA: UKOT (United Kingdom Overseas Territories), AKA: BWI (British West Indies); includes Akrotiri and Dhekelia, Anguilla, Bermuda, British Antarctic Territory, British Indian Ocean Territory, British Virgin Islands, Cayman Islands, Falkland Islands, Gibraltar, Montserrat, (Pitcairn, Henderson, Ducie and Oeno Islands), (Saint Helena, Ascension and Tristan da Cunha), (South Georgia and the South Sandwich Islands), (Turks and Caicos Islands)
+const COUNTRY_BN_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Brunei Darussalam / CN: Brunei
+const COUNTRY_BOT_NUMBER_SEPARATRIX = SEPARATRIX_POINT        // BOT (British Overseas Territories) / AKA: UKOT (United Kingdom Overseas Territories) / AKA: BWI (British West Indies); includes Akrotiri and Dhekelia, Anguilla, Bermuda, British Antarctic Territory, British Indian Ocean Territory, British Virgin Islands, Cayman Islands, Falkland Islands, Gibraltar, Montserrat, (Pitcairn, Henderson, Ducie and Oeno Islands), (Saint Helena, Ascension and Tristan da Cunha), (South Georgia and the South Sandwich Islands), (Turks and Caicos Islands)
 const COUNTRY_BW_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Botswana
 const COUNTRY_CA_EN_NUMBER_SEPARATRIX = SEPARATRIX_POINT      // Canada (English)
 const COUNTRY_CA_EN_NUMBER_THOUSANDS = SEPARATRIX_SPACE       // Canada (English)
 const COUNTRY_CA_FR_NUMBER_SEPARATRIX = SEPARATRIX_COMMA      // Canada (French)
 const COUNTRY_CA_FR_NUMBER_THOUSANDS = SEPARATRIX_SPACE       // Canada (French)
+const COUNTRY_CH_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Switzerland. Code taken from name in Latin: Confoederatio Helvetica
 const COUNTRY_CN_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // China
 const COUNTRY_DE_NUMBER_MILLIONS = SEPARATRIX_SPACE           // Germany
 const COUNTRY_DE_NUMBER_SEPARATRIX = SEPARATRIX_COMMA         // Germany
@@ -95,62 +118,73 @@ const COUNTRY_FI_NUMBER_SEPARATRIX = SEPARATRIX_COMMA         // Finland
 const COUNTRY_FI_NUMBER_THOUSANDS = SEPARATRIX_SPACE          // Finland
 const COUNTRY_FR_NUMBER_SEPARATRIX = SEPARATRIX_COMMA         // France
 const COUNTRY_FR_NUMBER_THOUSANDS = SEPARATRIX_SPACE          // France
-const COUNTRY_GB_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Great Britain
-const COUNTRY_GB_NUMBER_THOUSANDS = SEPARATRIX_COMMA          // Great Britain
+const COUNTRY_GB_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // United Kingdom of Great Britain and Northern Ireland
+const COUNTRY_GB_NUMBER_THOUSANDS = SEPARATRIX_COMMA          // United Kingdom of Great Britain and Northern Ireland
 const COUNTRY_GH_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Ghana
 const COUNTRY_GR_NUMBER_SEPARATRIX = SEPARATRIX_COMMA         // Greece
 const COUNTRY_GT_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Guatemala
 const COUNTRY_HK_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Hong Kong
 const COUNTRY_HN_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Honduras
 const COUNTRY_IE_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Ireland
+const COUNTRY_IL_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Israel
 const COUNTRY_IT_NUMBER_SEPARATRIX = SEPARATRIX_COMMA         // Italy
 const COUNTRY_IT_NUMBER_THOUSANDS = SEPARATRIX_POINT          // Italy
+const COUNTRY_JO_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Jordan
+const COUNTRY_JP_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Japan
+const COUNTRY_KE_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Kenya
 const COUNTRY_KH_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Cambodia
-const COUNTRY_MO_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Macao, Formerly: Macau
+const COUNTRY_KP_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Democratic People's Republic of Korea / CN: North Korea
+const COUNTRY_KR_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Republic of Korea / CN: South Korea
+const COUNTRY_LB_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Lebanon
+const COUNTRY_LI_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Liechtenstein
+const COUNTRY_LK_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Sri Lanka
+const COUNTRY_LU_NUMBER_SEPARATRIX_ALT = SEPARATRIX_COMMA     // Luxembourg
+const COUNTRY_LU_NUMBER_SEPARATRIX_STD = SEPARATRIX_POINT     // Luxembourg
+const COUNTRY_MM_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Myanmar
+const COUNTRY_MO_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Macao / Formerly: Macau
+const COUNTRY_MT_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Malta
+const COUNTRY_MV_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Maldives
+const COUNTRY_MX_NUMBER_MILLION_ALT = SEPARATRIX_SEMICOLON    // Mexico
+const COUNTRY_MX_NUMBER_MILLION_STD = SEPARATRIX_APOSTROPHE   // Mexico
+const COUNTRY_MX_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Mexico
+const COUNTRY_MX_NUMBER_THOUSAND = SEPARATRIX_COMMA           // Mexico
+const COUNTRY_MY_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Malaysia
+const COUNTRY_NA_NUMBER_SEPARATRIX_ALT = SEPARATRIX_COMMA     // Namibia
+const COUNTRY_NA_NUMBER_SEPARATRIX_STD = SEPARATRIX_POINT     // Namibia
+const COUNTRY_NG_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Nigeria
+const COUNTRY_NI_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Nicaragua
+const COUNTRY_NP_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Nepal
+const COUNTRY_NZ_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // New Zealand
+const COUNTRY_PA_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Panama
+const COUNTRY_PH_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Philippines
+const COUNTRY_PK_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Pakistan
+const COUNTRY_PR_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Puerto Rico
+const COUNTRY_PS_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // State of Palestine / CN: Palestine
+const COUNTRY_SG_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Singapore
 const COUNTRY_SV_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // El Salvador
 const COUNTRY_TH_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Thailand
 const COUNTRY_TH_NUMBER_THOUSANDS = SEPARATRIX_COMMA          // Thailand
-const COUNTRY_UK_NUMBER_SEPARATRIX = SEPARATRIX_VBAR          // Great Britain. Old standard.
+const COUNTRY_TW_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // ROC (Republic of China) / Taiwan, Province of China / CN: Taiwan
+const COUNTRY_TZ_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Tanzania
+const COUNTRY_UG_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Uganda
+const COUNTRY_UK_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // United Kingdom
+const COUNTRY_UK_NUMBER_SEPARATRIX_OLD = SEPARATRIX_VBAR      // United Kingdom. Old standard.
+const COUNTRY_UK_NUMBER_THOUSANDS = SEPARATRIX_COMMA          // United Kingdom
 const COUNTRY_US_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // United States
 const COUNTRY_US_NUMBER_THOUSANDS = SEPARATRIX_COMMA          // United States
-const COUNTRY_ZA_NUMBER_SEPARATRIX = SEPARATRIX_COMMA         // South Africa
+const COUNTRY_ZA_NUMBER_SEPARATRIX_ALT = SEPARATRIX_POINT     // South Africa
+const COUNTRY_ZA_NUMBER_SEPARATRIX_STD = SEPARATRIX_COMMA     // South Africa
+const COUNTRY_ZW_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Zimbabwe
 
-const COUNTRY_IL_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Israel
-const COUNTRY_JP_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Japan
-const COUNTRY_JO_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Jordan
-const COUNTRY_KE_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Kenya
-const COUNTRY_KP_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Democratic People's Republic of Korea, CN: North Korea
-const COUNTRY_KR_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Republic of Korea, CN: South Korea
-const COUNTRY_LB_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Lebanon
-const COUNTRY_LI_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Liechtenstein
-const COUNTRY_LU_NUMBER_SEPARATRIX_ALT = SEPARATRIX_COMMA     // Luxembourg
-const COUNTRY_LU_NUMBER_SEPARATRIX_STD = SEPARATRIX_POINT     // Luxembourg
-const COUNTRY_MY_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Malaysia
-const COUNTRY_MV_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Maldives
-const COUNTRY_MT_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Malta
-const COUNTRY_MX_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Mexico
-const COUNTRY_MX_NUMBER_THOUSAND = SEPARATRIX_COMMA           // Mexico
-const COUNTRY_MX_NUMBER_MILLION_ALT = SEPARATRIX_SEMICOLON    // Mexico
-const COUNTRY_MX_NUMBER_MILLION_STD = SEPARATRIX_APOSTROPHE   // Mexico
-const COUNTRY_MM_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Myanmar
-const COUNTRY_NA_NUMBER_SEPARATRIX_ALT = SEPARATRIX_COMMA     // Namibia
-const COUNTRY_NA_NUMBER_SEPARATRIX_STD = SEPARATRIX_POINT     // Namibia
-const COUNTRY_NP_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Nepal
-const COUNTRY_NZ_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // New Zealand
-const COUNTRY_NI_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Nicaragua
-const COUNTRY_NG_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Nigeria
-const COUNTRY_PK_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // Pakistan
-
-// const COUNTRY_XX_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // _____
-// const COUNTRY_XX_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // _____
-// const COUNTRY_XX_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // _____
-// const COUNTRY_XX_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // _____
-// const COUNTRY_XX_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // _____
-// const COUNTRY_XX_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // _____
-// const COUNTRY_XX_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // _____
-// const COUNTRY_XX_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // _____
-// const COUNTRY_XX_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // _____
-// const COUNTRY_XX_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // _____
+const COUNTRY_XX_NUMBER_SEPARATRIX = SEPARATRIX_COMMA         // _____
+const COUNTRY_XX_NUMBER_SEPARATRIX = SEPARATRIX_COMMA         // _____
+const COUNTRY_XX_NUMBER_SEPARATRIX = SEPARATRIX_COMMA         // _____
+const COUNTRY_XX_NUMBER_SEPARATRIX = SEPARATRIX_COMMA         // _____
+const COUNTRY_XX_NUMBER_SEPARATRIX = SEPARATRIX_COMMA         // _____
+const COUNTRY_XX_NUMBER_SEPARATRIX = SEPARATRIX_COMMA         // _____
+const COUNTRY_XX_NUMBER_SEPARATRIX = SEPARATRIX_COMMA         // _____
+const COUNTRY_XX_NUMBER_SEPARATRIX = SEPARATRIX_COMMA         // _____
+const COUNTRY_XX_NUMBER_SEPARATRIX = SEPARATRIX_COMMA         // _____
 
 const COUNTRY_IN_NUMBER_SEPARATRIX = SEPARATRIX_POINT         // India
 const COUNTRY_IN_NUMBER_THOUSAND = SEPARATRIX_COMMA           // India
@@ -172,35 +206,20 @@ const STANDARD_SI_NUMBER_DELIMITER = SEPARATRIX_SPACE
 
 
 //
-// TYPES
+// VARIABLES
 //
-type CountryCodesAndNumbers struct {
-	CountryNames []string
-	CountryAlpha2 string
-	CountryAlpha3 string
-	Adjective string
-	SingularNoun string
-	PluralNoun string
-	Number_Separatrix string
-	Decimal_Grouping []int
-	Decimal_GroupDelimiters []string
-	Fractional_Grouping []int
-	Fractional_GroupDelimiters []string
-}
-
-var GermanyCodesAndNumbers CountryCodesAndNumbers = CountryCodesAndNumbers{
-	CountryNames: []string{"Germany"},
-	CountryAlpha2: "DE",
-	CountryAlpha3: "DEU",
-	Adjective: "German",
-	SingularNoun: "German",
-	PluralNoun: "Germans",
-	Number_Separatrix: SEPARATRIX_COMMA,
-	Decimal_Grouping: []int{3},
-	Decimal_GroupDelimiters: []string{SEPARATRIX_POINT},
-}
-
 var LocaleData map[string]CountryCodesAndNumbers = map[string]CountryCodesAndNumbers{
+	"DE": CountryCodesAndNumbers{
+		CountryNames: []string{"Germany"},
+		CountryAlpha2: "DE",
+		CountryAlpha3: "DEU",
+		Adjective: "German",
+		SingularNoun: "German",
+		PluralNoun: "Germans",
+		Number_Separatrix: SEPARATRIX_COMMA,
+		Decimal_Grouping: []int{3},
+		Decimal_GroupDelimiters: []string{SEPARATRIX_POINT},
+	},
 	"IN": CountryCodesAndNumbers{
 		CountryNames: []string{"India"},
 		CountryAlpha2: "IN",
@@ -226,12 +245,7 @@ var LocaleData map[string]CountryCodesAndNumbers = map[string]CountryCodesAndNum
 		Fractional_GroupDelimiters: []string{SEPARATRIX_SPACE},
 	},
 	"TESTONE": CountryCodesAndNumbers{
-		CountryNames: []string{"Test 1"},
-		CountryAlpha2: "T1",
-		CountryAlpha3: "Ts1",
-		Adjective: "Test 1",
-		SingularNoun: "Test 1",
-		PluralNoun: "Test 1",
+		CountryNames: []string{"Test One"},
 		Number_Separatrix: COUNTRY_IN_NUMBER_SEPARATRIX,
 		Decimal_Grouping: []int{3, 2},
 		Decimal_GroupDelimiters: []string{COUNTRY_IN_NUMBER_THOUSAND, COUNTRY_IN_NUMBER_HUNDRED_THOUSAND},

@@ -318,6 +318,18 @@ func cleanupJSON(data OutputData) (data_obj map[string]interface{}) {
 var locale_NumberFormatter func(number float64, scale int) string
 
 
+/** Returns the largest integer in the list of arguments */
+func maxInt(nums ...int) (max_int int) {
+	max_int = math.MinInt64
+	for _, num := range nums {
+		if max_int < num {
+			max_int = num
+		}
+	}
+	return max_int
+}
+
+
 /** Convert MPBR in meters to input units */
 func mpbr_to_mpbr(data BallisticData) (mpbr LabeledValue) {
 	mpbr.Label = ""
@@ -356,74 +368,64 @@ func mpbr_to_mpbr(data BallisticData) (mpbr LabeledValue) {
 }
 
 
+/** Takes a float64 and returns it's formated number value and it's string width */
+func numberFormatter(number float64) (value string, width int) {
+	value = locale_NumberFormatter(number, decimal_places)
+	width = len(value)
+
+	return value, width
+}
+
+
 /** Print Human Readable Output */
 func outputHuman(data OutputData) {
 	fmt.Println("")
 
-	var energy_num_value string
-	var energy_num_width int
-	var max_width_int int
-	var momentum_num_value string
-	var momentum_num_width int
-	var mpbr_num_value string
-	var mpbr_num_width int
-	var velocity_num_value string
-	var velocity_num_width int
+	var energy_value string
+	var energy_width int
+	var momentum_value string
+	var momentum_width int
+	var mpbr_value string
+	var mpbr_width int
+	var velocity_value string
+	var velocity_width int
 
 	if data.Velocity.ValueFloat > 0 {
-		// fmt.Printf("  Projectile Velocity: %16.6f %s\n", data.Velocity.ValueFloat, data.Velocity.Label)
-		velocity_num_value = locale_NumberFormatter(data.Velocity.ValueFloat, decimal_places)
-		velocity_num_width = len(velocity_num_value)
+		velocity_value, velocity_width = numberFormatter(data.Velocity.ValueFloat)
 	}
 	if data.Energy.ValueFloat > 0 {
-		// fmt.Printf("    Projectile Energy: %16.6f %s\n", data.Energy.ValueFloat, data.Energy.Label)
-		// fmt.Printf("    Projectile Energy: %16s %s\n", numberFormat(data.Energy.ValueFloat), data.Energy.Label)
-		// fmt.Printf("    Projectile Energy: %20s %s\n", locale_NumberFormatter(data.Energy.ValueFloat, decimal_places), data.Energy.Label)
-		energy_num_value = locale_NumberFormatter(data.Energy.ValueFloat, decimal_places)
-		energy_num_width = len(energy_num_value)
+		energy_value, energy_width = numberFormatter(data.Energy.ValueFloat)
 	}
 	if data.Momentum.ValueFloat > 0 {
-		// fmt.Printf("  Projectile Momentum: %16.6f %s\n", data.Momentum.ValueFloat, data.Momentum.Label)
-		// fmt.Printf("  Projectile Momentum: %20s %s\n", locale_NumberFormatter(data.Momentum.ValueFloat, decimal_places), data.Momentum.Label)
-		momentum_num_value = locale_NumberFormatter(data.Momentum.ValueFloat, decimal_places)
-		momentum_num_width = len(momentum_num_value)
+		momentum_value, momentum_width = numberFormatter(data.Momentum.ValueFloat)
 	}
 	if data.Mpbr.ValueFloat > 0 {
-		// fmt.Printf("Max Point Blank Range: %16.6f %s\n", data.Mpbr.ValueFloat, data.Mpbr.Label)
-		// fmt.Printf("Max Point Blank Range: %20s %s\n", locale_NumberFormatter(data.Mpbr.ValueFloat, decimal_places), data.Mpbr.Label)
-		mpbr_num_value = locale_NumberFormatter(data.Mpbr.ValueFloat, decimal_places)
-		mpbr_num_width = len(mpbr_num_value)
+		mpbr_value, mpbr_width = numberFormatter(data.Mpbr.ValueFloat)
 	}
 
-	if velocity_num_width > energy_num_width {
-		max_width_int = velocity_num_width
-	} else {
-		max_width_int = energy_num_width
-	}
-	if momentum_num_width > max_width_int {
-		max_width_int = momentum_num_width
-	}
-	if mpbr_num_width > max_width_int {
-		max_width_int = mpbr_num_width
-	}
-	max_width_str := fmt.Sprintf("%d", max_width_int)
+	max_width := fmt.Sprintf("%d", maxInt(
+		velocity_width,
+		energy_width,
+		momentum_width,
+		mpbr_width,
+	))
 
 
-	if velocity_num_width > 0 {
-		msg_format := "  Projectile Velocity: %" + max_width_str + "s %s\n"
-		fmt.Printf(msg_format, velocity_num_value, data.Velocity.Label)
+	if velocity_width > 0 {
+		msg_format := "  Projectile Velocity: %" + max_width + "s %s\n"
+		fmt.Printf(msg_format, velocity_value, data.Velocity.Label)
 	}
-	if energy_num_width > 0 {
-		msg_format := "    Projectile Energy: %" + max_width_str + "s %s\n"
-		fmt.Printf(msg_format, energy_num_value, data.Energy.Label)
+	if energy_width > 0 {
+		msg_format := "    Projectile Energy: %" + max_width + "s %s\n"
+		fmt.Printf(msg_format, energy_value, data.Energy.Label)
 	}
-	if momentum_num_width > 0 {
-		msg_format := "  Projectile Momentum: %" + max_width_str + "s %s\n"
-		fmt.Printf(msg_format, momentum_num_value, data.Momentum.Label)
+	if momentum_width > 0 {
+		msg_format := "  Projectile Momentum: %" + max_width + "s %s\n"
+		fmt.Printf(msg_format, momentum_value, data.Momentum.Label)
 	}
-	if mpbr_num_width > 0 {
-		msg_format := "Max Point Blank Range: %" + max_width_str + "s %s\n"
-		fmt.Printf(msg_format, mpbr_num_value, data.Mpbr.Label)
+	if mpbr_width > 0 {
+		msg_format := "Max Point Blank Range: %" + max_width + "s %s\n"
+		fmt.Printf(msg_format, mpbr_value, data.Mpbr.Label)
 	}
 	
 	fmt.Println("")

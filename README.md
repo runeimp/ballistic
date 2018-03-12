@@ -1,4 +1,4 @@
-Ballistic v0.3.0
+Ballistic v0.4.0
 ================
 
 Command line ballistics calculator
@@ -126,6 +126,31 @@ There are many online resources to help with calculating ballistics for guns and
 
 This is my choice over using `make` to facilitates building the binaries and creating distrobutions. I use [`just`][] which is such a great command runner in the style of `make`! But without the many issues associated with using one of the many, many different versions of `make`. I can barely express the love I have for such tools. I highly recommend it!
 
+
+Internationalization/Locale
+---------------------------
+
+Ballistic can format the human output numbers per locale norms. It currently checks for locale settings via the environment variables LC_CTYPE and LANG. It also allows you to specify a locale such as `en_CA` or `FR-CA` for English or French Canada for instance or simply `EN` for general English speakers, `DE` the German language or country, etc. via the `--locale` option.
+
+### Locales Supported
+
+- `AU` Australia/Australian -- Country and language standard
+- `CN` China -- Country standard when using arabic numerals
+- `DE` Germany/German -- Country and language standard
+- `EN-SIU` English International System of Units standard
+- `EN_CA` English Canadian standard
+- `EN` English -- The same for the USA, UK, and many others. Who would have thunk?
+- `FR-SIU` French International System of Units standard
+- `FR_CA` French Canadian standard
+- `HK` Hong Kong -- Country standard when using arabic numerals
+- `IE` Ireland/Irish -- Country and language standard
+- `IN` India/Indian -- Country and language standard
+- `IS` Israel/Israeli -- Country and language standard when using arabic numerals
+- `JP` Japan/Japanese -- Country and language standard when using arabic numerals
+
+Note that locales with two sets of letters can be seperated by a hyphen or underscore. Both are valid and are interspersed above just for illustrative purposes.
+
+
 ToDo
 ----
 
@@ -136,7 +161,7 @@ ToDo
 	- Projectile penetration reference (WIP momentum + ballistic coefficient)
 	- Compound Bow (modern cambered bow): projectile energy and velocity
 - Automagically:
-	- Set output units based on locale (at least between metric and imperial)
+	- Set output units based on locale. At least switching intelligently between metric and imperial units.
 
 
  * * *
@@ -156,6 +181,7 @@ Here be Dragons! (my research)
 
 | Category      | Symbol     | Unicode  | Decimal     | Escape     | Numbers  | Description                                                                                 |
 | :------:      | :----:     | :-----:  | :-----:     | :----:     | :-----:  | -----------                                                                                 |
+| Comma         | &#x0027;   | U+0027   | `&#39;`     | `\u0027`   |          | [Unicode APOSTROPHE][]                                                                      |
 | Comma         | &#x002C;   | U+002C   | `&#44;`     | `\u002C`   | &check;  | [Unicode COMMA][]                                                                           |
 | Comma         | &#x01144D; | U+01144D | `&#70733;`  | `\u01144D` |          | [Unicode NEWA COMMA][]                                                                      |
 | Comma         | &#x01DA87; | U+01DA87 | `&#121479;` | `\u01DA87` |          | [Unicode SIGNWRITING COMMA][]                                                               |
@@ -194,7 +220,6 @@ Here be Dragons! (my research)
 |               | &#x____;   | U+____   | `&#____;`   | `\u____`   |          | []                                                                                          |
 |               | &#x____;   | U+____   | `&#____;`   | `\u____`   |          | []                                                                                          |
 |               | &#x____;   | U+____   | `&#____;`   | `\u____`   |          | []                                                                                          |
-|               | &#x____;   | U+____   | `&#____;`   | `\u____`   |          | []                                                                                          |
 -->
 
 
@@ -219,7 +244,6 @@ PE = Potential Energy
 [Unicode ____]: https://www.fileformat.info/info/unicode/char/____/
 [Unicode ____]: https://www.fileformat.info/info/unicode/char/____/
 [Unicode ____]: https://www.fileformat.info/info/unicode/char/____/
-[Unicode ____]: https://www.fileformat.info/info/unicode/char/____/
 -->
 
 [`just`]: https://github.com/casey/just
@@ -229,6 +253,7 @@ PE = Potential Energy
 [SI (International System of Units) - Wikipedia]: https://en.wikipedia.org/wiki/International_System_of_Units
 [ISO 31-0: Numbers - Wikipedia]: https://en.wikipedia.org/wiki/ISO_31-0#Numbers
 [PSI to Energy]: https://www.physicsforums.com/threads/psi-to-kw-conversion.700882/
+[Unicode APOSTROPHE]: https://www.fileformat.info/info/unicode/char/0027/
 [Unicode ARABIC COMMA]: https://www.fileformat.info/info/unicode/char/060C/
 [Unicode ARABIC DECIMAL SEPARATOR]: https://www.fileformat.info/info/unicode/char/066B/
 [Unicode ARABIC THOUSANDS SEPARATOR]: https://www.fileformat.info/info/unicode/char/066C/

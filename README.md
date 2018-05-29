@@ -1,4 +1,4 @@
-Ballistic v0.5.0
+Ballistic v0.5.1
 ================
 
 Command line ballistics calculator
@@ -100,7 +100,7 @@ USAGE:
    ballistic [global options]
 
 VERSION:
-   0.5.0
+   0.5.1
 
 GLOBAL OPTIONS:
    --debug, -D                                             Output debug info

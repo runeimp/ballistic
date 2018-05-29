@@ -55,7 +55,7 @@ COPYRIGHT:
 VALUE SUFFIXES:
   All input values may be suffixed to allow for broader input selection.
 
-  ANGEL
+  ANGLE
     d, deg, degree, degrees
     r, rad, radian, radians
   LENGTH

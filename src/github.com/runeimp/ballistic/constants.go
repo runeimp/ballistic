@@ -55,6 +55,9 @@ COPYRIGHT:
 VALUE SUFFIXES:
   All input values may be suffixed to allow for broader input selection.
 
+  ANGEL
+    d, deg, degree, degrees
+    r, rad, radian, radians
   LENGTH
     c, cm, centi, centimeter, centimeters
     f, ft, foot, feet
@@ -89,6 +92,10 @@ If most or all of the input values are in imperial units then the output will us
 // ‡  This is the default if you set BALLISTIC_UNITS to imperial instead of metric
 // The environment variable BALLISTIC_UNITS can be defined as imperial or metric. If it is defined the output units will always be of that system. If BALLISTIC_UNITS is not defined and most or all of the input values are in imperial units then the output will use imperial units as well. Otherwise ballistic defaults to metric.
 
+
+const ANGLE_DEGREES_TO_RADIANS float64 = 0.0174533
+const ANGLE_LABEL_DEGREES = "degrees"
+const ANGLE_LABEL_RADIANS = "radians"
 
 const LENGTH_FROM_CENTIMETERS_TO_METERS float64 = 0.01
 const LENGTH_FROM_FEET_TO_METERS float64 = 0.3048
@@ -164,9 +171,10 @@ const VELOCITY_LABEL_MPS = "meters per second"
 
 var /* const */ VALUE_RE = regexp.MustCompile("([0-9]*[0-9.]?[0-9]*)([a-z#]*)")
 // var /* const */ VALUE_RE = regexp.MustCompile("([0-9.]+)([a-z#]*)")
+const VALUE_TYPE_ANGLE string = "angle"
 const VALUE_TYPE_LENGTH string = "length"
-const VALUE_TYPE_VELOCITY string = "velocity"
 const VALUE_TYPE_MASS string = "weight"
+const VALUE_TYPE_VELOCITY string = "velocity"
 
 
 /** Initialize Package */

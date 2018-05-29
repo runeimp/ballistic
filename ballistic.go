@@ -33,7 +33,7 @@ import (
 //
 // CONSTANTS
 //
-const APP_VERSION = "0.4.2"
+const APP_VERSION = "0.5.0"
 
 
 //
@@ -46,7 +46,9 @@ type BallisticData struct {
 	mpbr ParsedData // max_point_blank_range ParsedData
 	projectile_energy ParsedData
 	projectile_mass ParsedData
+	projectile_range ParsedData
 	projectile_velocity ParsedData
+	projection_angle ParsedData
 	target_radius ParsedData
 }
 
@@ -54,7 +56,7 @@ type BallisticData struct {
 type LabeledValue struct {
 	Label string       `json:"label,omitempty"`
 	ValueFloat float64 `json:"value,omitempty"`
-	ValueString string `json:"value,omitempty"`
+	ValueString string `json:"value_str,omitempty"`
 }
 
 // func (t LabeledValue) MarshalJSON() ([]byte, error) {
@@ -94,7 +96,7 @@ func buildOutputData(data BallisticData) {
 		output.Velocity = velocity_to_velocity(data)
 	}
 	
-	output.Energy = calcEnergy(data)
+	output.Energy = calcKineticEnergy(data)
 	output.Momentum = calcMomentum(data)
 
 	if output_debug {
@@ -152,19 +154,19 @@ func calcDistanceForDrop(drop, velocity float64) (distance float64) {
 }
 
 
-/** Calculate energy */
-func calcEnergy(data BallisticData) (energy LabeledValue) {
+/** Calculate kinetic energy */
+func calcKineticEnergy(data BallisticData) (energy LabeledValue) {
 	// 1 Joule == 1 N⋅m (Newton meter)
 	mass_kg := data.projectile_mass.Value
 	velocity_mps := data.projectile_velocity.Value
 
-	energy.ValueFloat = mass_kg * velocity_mps * velocity_mps
+	energy.ValueFloat = mass_kg * velocity_mps * velocity_mps * 0.5
 	energy.Label = ENERGY_LABEL_JOULES
 
 	if output_debug {
-		log.Printf("calcEnergy()   <| mass: %f kg", mass_kg)
-		log.Printf("calcEnergy()   <| velocity: %f mps", velocity_mps)
-		log.Printf("calcEnergy()    | energy: %f %s", energy.ValueFloat, energy.Label)
+		log.Printf("calcKineticEnergy()   <| mass: %f kg", mass_kg)
+		log.Printf("calcKineticEnergy()   <| velocity: %f mps", velocity_mps)
+		log.Printf("calcKineticEnergy()    | energy: %f %s", energy.ValueFloat, energy.Label)
 	}
 
 	return energy
@@ -172,13 +174,13 @@ func calcEnergy(data BallisticData) (energy LabeledValue) {
 
 
 /** Calculate force Newtons */ 
-func calc_force(avg_draw_weight float64) (draw_force ParsedData) {
+func calcForce(avg_draw_weight float64) (draw_force ParsedData) {
 	draw_force.Value = avg_draw_weight * FORCE_FROM_KILOGRAMS_TO_NEWTONS
 	draw_force.Label = FORCE_LABEL_NEWTONS
 
 	if output_debug {
-		log.Printf("calc_force()    <| avg_draw_weight: %f kg", avg_draw_weight)
-		log.Printf("calc_force()     | draw_force: %f %s", draw_force.Value, draw_force.Label)
+		log.Printf("calcForce()    <| avg_draw_weight: %f kg", avg_draw_weight)
+		log.Printf("calcForce()     | draw_force: %f %s", draw_force.Value, draw_force.Label)
 	}
 	
 	return draw_force
@@ -287,6 +289,30 @@ func calcVelocity(data BallisticData) (projectile_velocity ParsedData) {
 }
 
 
+/** Calculate the initial velocity of a projectile */
+func calcVelocityInitial(data BallisticData) (initial_velocity ParsedData) {
+	radians := data.projection_angle.Value * ANGLE_DEGREES_TO_RADIANS
+	sin := math.Sin(2 * radians)
+	Rg := data.projectile_range.Value * GRAVITY_MPS
+	initial_velocity.Value = math.Sqrt(Rg/sin)
+	initial_velocity.Label = VELOCITY_LABEL_MPS
+
+	if len(InputData.Velocity) == 0 {
+		if InputData.Metric {
+			InputData.Velocity = VELOCITY_LABEL_MPS
+		} else {
+			InputData.Velocity = VELOCITY_LABEL_FPS
+		}
+	}
+
+	if output_debug {
+		log.Printf("calcVelocityInitial()  | initial velocity: %15.6f mps", initial_velocity.Value)
+	}
+
+	return initial_velocity
+}
+
+
 /**
  * Cleans up OutputData for JSON parsing
  *
@@ -294,8 +320,9 @@ func calcVelocity(data BallisticData) (projectile_velocity ParsedData) {
  * This is necessary because the standard JSON package does not check child
  * structs if they are empty or not.
  */
-func cleanupJSON(data OutputData) (data_obj map[string]interface{}) {
-	data_obj = make(map[string]interface{})
+func cleanupJSON(data OutputData) (data_obj map[string]LabeledValue) {
+	// data_obj = make(map[string]interface{})
+	data_obj = make(map[string]LabeledValue)
 
 	if data.Energy.ValueFloat != 0 {
 		data_obj["energy"] = data.Energy
@@ -320,7 +347,9 @@ var locale_NumberFormatter func(number float64, scale int) string
 
 /** Returns the largest integer in the list of arguments */
 func maxInt(nums ...int) (max_int int) {
-	max_int = math.MinInt64
+	// max_int = math.MinInt64 // ./ballistic.go:350:10: constant -9223372036854775808 overflows int when compiling for Win32
+	max_int = math.MinInt32
+	
 	for _, num := range nums {
 		if max_int < num {
 			max_int = num
@@ -444,12 +473,22 @@ func outputJSON(data OutputData) {
 	if output_debug {
 		fmt.Println("JSON data!")
 		fmt.Printf("data.Energy: %f %s\n", data.Energy.ValueFloat, data.Energy.Label)
+		fmt.Printf("data.Momentum: %f %s\n", data.Momentum.ValueFloat, data.Momentum.Label)
+		fmt.Printf("data.Mpbr: %f %s\n", data.Mpbr.ValueFloat, data.Mpbr.Label)
+		fmt.Printf("data.Velocity: %f %s\n", data.Velocity.ValueFloat, data.Velocity.Label)
 	}
 	var err error
 	var json_data []byte
 
 	data_obj := cleanupJSON(data)
 	// data_obj := data
+	if output_debug {
+		fmt.Println("JSON data!")
+		fmt.Printf("data_obj[\"energy\"]: %f %s\n", data_obj["energy"].ValueFloat, data_obj["energy"].Label)
+		fmt.Printf("data_obj[\"momentum\"]: %f %s\n", data_obj["momentum"].ValueFloat, data_obj["momentum"].Label)
+		fmt.Printf("data_obj[\"mpbr\"]: %f %s\n", data_obj["mpbr"].ValueFloat, data_obj["mpbr"].Label)
+		fmt.Printf("data_obj[\"velocity\"]: %f %s\n", data_obj["velocity"].ValueFloat, data_obj["velocity"].Label)
+	}
 
 	if output_pretty {
 		json_data, err = json.MarshalIndent(data_obj, "", output_indent)
@@ -530,9 +569,17 @@ func main() {
 	app.Version = APP_VERSION
 
 	app.Flags = []cli.Flag {
+		cli.StringFlag{
+			Name: "projection-angle, angle, a",
+			Usage: "The projection angle or trajectory of projectile",
+		},
 		cli.BoolFlag{
-			Name: "debug, d",
+			Name: "debug, D",
 			Usage: "Output debug info",
+		},
+		cli.StringFlag{
+			Name: "projectile-range, distance, d",
+			Usage: "The distance the projectile traveled",
 		},
 		cli.StringFlag{
 			Name: "draw-weight, weight, w",
@@ -663,7 +710,7 @@ func main() {
 		if len(c.String("draw-weight")) > 0 {
 			data.draw_weight = ParseValue(c.String("draw-weight"), VALUE_TYPE_MASS)
 			avg_draw_weight := data.draw_weight.Value * 0.5
-			data.draw_force = calc_force(avg_draw_weight)
+			data.draw_force = calcForce(avg_draw_weight)
 		}
 		if len(c.String("velocity")) > 0 {
 			data.projectile_velocity = ParseValue(c.String("velocity"), VALUE_TYPE_VELOCITY)
@@ -671,10 +718,18 @@ func main() {
 		if len(c.String("mass")) > 0 {
 			data.projectile_mass = ParseValue(c.String("mass"), VALUE_TYPE_MASS)
 		}
+		if len(c.String("projectile-range")) > 0 {
+			data.projectile_range = ParseValue(c.String("projectile-range"), VALUE_TYPE_LENGTH)
+		}
+		if len(c.String("projection-angle")) > 0 {
+			data.projection_angle = ParseValue(c.String("projection-angle"), VALUE_TYPE_MASS)
+		}
 
 		if data.projectile_velocity.Value == 0 {
 			if data.projectile_mass.Value > 0 && data.draw_length.Value > 0 && data.draw_force.Value > 0 {
 				data.projectile_velocity = calcVelocity(data)
+			} else if data.projectile_range.Value > 0 && data.projection_angle.Value > 0 {
+				data.projectile_velocity = calcVelocityInitial(data)
 			}
 		}
 

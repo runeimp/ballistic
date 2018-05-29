@@ -23,6 +23,7 @@ import (
 // Structs
 //
 type InputUnits struct {
+	Angle string
 	Length string
 	Mass string
 	Metric bool
@@ -60,6 +61,21 @@ func ParseValue(value, value_type string) (parsed_data ParsedData) {
 		var norm_value float64
 
 		switch value_type {
+		case VALUE_TYPE_ANGLE:
+			norm_type = "degrees"
+
+			switch suffix {
+			case "degrees", "degree", "deg", "d":
+				norm_value = number * 1.0
+				designation = ANGLE_LABEL_DEGREES
+				// InputData.Metric = false
+			case "radians", "radian", "rad", "r":
+				norm_value = number * 1.0
+				designation = ANGLE_LABEL_RADIANS
+				// InputData.Metric = false
+			}
+
+			InputData.Angle = designation
 		case VALUE_TYPE_LENGTH:
 			norm_type = "meter"
 
@@ -97,6 +113,7 @@ func ParseValue(value, value_type string) (parsed_data ParsedData) {
 				designation = LENGTH_LABEL_MILLIMETER
 				InputData.Metric = true
 			}
+
 			InputData.Length = designation
 		case VALUE_TYPE_MASS:
 			norm_type = "kilogram"
@@ -131,6 +148,7 @@ func ParseValue(value, value_type string) (parsed_data ParsedData) {
 				designation = MASS_LABEL_METRIC_TONNE
 				InputData.Metric = true
 			}
+
 			InputData.Mass = designation
 		case VALUE_TYPE_VELOCITY:
 			norm_type = "meters per second"
@@ -156,7 +174,7 @@ func ParseValue(value, value_type string) (parsed_data ParsedData) {
 				designation = VELOCITY_LABEL_MPS
 				InputData.Metric = true
 			}
-			
+
 			InputData.Velocity = designation
 		}
 

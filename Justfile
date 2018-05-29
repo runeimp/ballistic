@@ -20,6 +20,9 @@ _build-app:
 		just build-win32
 	else
 		just build-{{os()}}
+		if [ -d "${HOME}/dev/bin" ]; then
+			cp bin/{{os()}}/ballistic "${HOME}/dev/bin/"
+		fi
 	fi
 
 @build arg='app':
@@ -234,9 +237,9 @@ _list-dir path='.':
 
 
 # Run the app
-run +args='':
-	@just term-wipe
-	@just _run {{args}}
+@run +args='':
+	just term-wipe
+	just _run {{args}}
 
 @_run +args='':
 	# BALLISTIC_WEIGHT=grams bin/{{os()}}/ballistic
@@ -306,14 +309,14 @@ _term-lw label:
 term-wipe:
 	#!/usr/bin/env sh
 	if [ '{{os()}}' = 'macos' ]; then
-		just _term-wipe
+		osascript -e 'tell application "System Events" to keystroke "k" using command down'
+	elif [ -f `which tput` ]; then
+		tput reset
+	elif [ -f `which reset` ]; then
+		reset
 	else
 		just _term-clear
 	fi
-
-_term-wipe:
-	#!/usr/bin/osascript
-	tell application "System Events" to keystroke "k" using command down
 
 
 # Test all examples

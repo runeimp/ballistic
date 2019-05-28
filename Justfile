@@ -262,7 +262,7 @@ path:
 
 
 # Test Helper
-@test id='app' +args='-m 5g -v 2000fps':
+@test id='app' +args='-m 123g -v 456789fps':
 	just _term-lw "{{PROJECT_NAME}}"
 	just test-{{id}} {{args}}
 
@@ -270,8 +270,9 @@ path:
 test-app +args='':
 	@# echo "$ {{BINARY_NAME}} {{args}}"
 	go run {{SOURCE_NAME}} {{args}}
-	LC_CTYPE=DE go run {{SOURCE_NAME}} {{args}}
-	LC_CTYPE=IN go run {{SOURCE_NAME}} {{args}}
+	LC_CTYPE=en_US.UTF-8 go run {{SOURCE_NAME}} {{args}}
+	LANG=de_DE go run {{SOURCE_NAME}} {{args}}
+	go run {{SOURCE_NAME}} {{args}} --locale IN
 
 test-go +args='':
 	go test

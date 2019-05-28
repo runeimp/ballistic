@@ -1,0 +1,4 @@
+github.com/runeimp/locale v0.1.0 h1:n9kZdnH+SuDZoQjCJuqkTlswd53YNUDI0pSV1ifGR84=
+github.com/runeimp/locale v0.1.0/go.mod h1:HKfx2B0kZ7/2TPJ5K4ecIL8rz0hkAovJB8X4YNni9DM=
+gopkg.in/urfave/cli.v1 v1.20.0 h1:NdAVW6RYxDif9DhDHaAortIu956m2c0v+09AZBPTbE0=
+gopkg.in/urfave/cli.v1 v1.20.0/go.mod h1:vuBzUtMdQeixQj8LVd+/98pzhxNGQoyuPBlsXHOQNO0=
